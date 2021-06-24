@@ -1,0 +1,170 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.9 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{nyt/global//global/global}
+  \entry{MR1071176}{book}{}
+    \name{author}{2}{}{%
+      {{hash=FPJ}{%
+         family={Freyd},
+         familyi={F\bibinitperiod},
+         given={Peter\bibnamedelima J.},
+         giveni={P\bibinitperiod\bibinitdelim J\bibinitperiod},
+      }}%
+      {{hash=SA}{%
+         family={Scedrov},
+         familyi={S\bibinitperiod},
+         given={Andre},
+         giveni={A\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {North-Holland Publishing Co., Amsterdam}%
+    }
+    \strng{namehash}{FPJSA1}
+    \strng{fullhash}{FPJSA1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{FS90}
+    \field{sortinit}{F}
+    \field{sortinithash}{F}
+    \field{isbn}{0-444-70368-3; 0-444-70367-5}
+    \field{pages}{xviii+296}
+    \field{series}{North-Holland Mathematical Library}
+    \field{title}{Categories, allegories}
+    \field{volume}{39}
+    \field{year}{1990}
+  \endentry
+
+  \entry{nlab:fully_formal_etcs}{misc}{}
+    \name{author}{1}{}{%
+      {{hash=n}{%
+         family={{nLab authors}},
+         familyi={n\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{n1}
+    \strng{fullhash}{n1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{{nLa}21}
+    \field{extraalpha}{1}
+    \field{sortinit}{N}
+    \field{sortinithash}{N}
+  \field{howpublished}{\url{http://ncatlab.org/nlab/show/fully\%20formal\%20ETCS}}
+  \field{note}{\href{http://www.ncatlab.org/nlab/revision/fully\%20formal\%20ETCS/31}{Revision
+  31}}
+    \field{title}{fully formal {{E}}{{T}}{{C}}{{S}}}
+    \field{month}{03}
+    \field{year}{2021}
+  \endentry
+
+  \entry{nlab:pure_set}{misc}{}
+    \name{author}{1}{}{%
+      {{hash=n}{%
+         family={{nLab authors}},
+         familyi={n\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{n1}
+    \strng{fullhash}{n1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{{nLa}21}
+    \field{extraalpha}{2}
+    \field{sortinit}{N}
+    \field{sortinithash}{N}
+    \field{howpublished}{\url{http://ncatlab.org/nlab/show/pure\%20set}}
+  \field{note}{\href{http://ncatlab.org/nlab/revision/pure\%20set/49}{Revision
+  49}}
+    \field{title}{pure set}
+    \field{month}{03}
+    \field{year}{2021}
+  \endentry
+
+  \entry{nlab:sear}{misc}{}
+    \name{author}{1}{}{%
+      {{hash=n}{%
+         family={{nLab authors}},
+         familyi={n\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{n1}
+    \strng{fullhash}{n1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{{nLa}21}
+    \field{extraalpha}{3}
+    \field{sortinit}{N}
+    \field{sortinithash}{N}
+    \field{howpublished}{\url{http://ncatlab.org/nlab/show/SEAR}}
+    \field{note}{\href{http://ncatlab.org/nlab/revision/SEAR/54}{Revision 54}}
+    \field{title}{{{S}}{{E}}{{A}}{{R}}}
+    \field{month}{03}
+    \field{year}{2021}
+  \endentry
+
+  \entry{nlab:single-sorted_definition_of_a_category}{misc}{}
+    \name{author}{1}{}{%
+      {{hash=n}{%
+         family={{nLab authors}},
+         familyi={n\bibinitperiod},
+      }}%
+    }
+    \strng{namehash}{n1}
+    \strng{fullhash}{n1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{{nLa}21}
+    \field{extraalpha}{4}
+    \field{sortinit}{N}
+    \field{sortinithash}{N}
+  \field{howpublished}{\url{http://ncatlab.org/nlab/show/single-sorted\%20definition\%20of\%20a\%20category}}
+  \field{note}{\href{http://ncatlab.org/nlab/revision/single-sorted\%20definition\%20of\%20a\%20category/8}{Revision
+  8}}
+    \field{title}{single-sorted definition of a category}
+    \field{month}{03}
+    \field{year}{2021}
+  \endentry
+
+  \entry{Riehl}{book}{}
+    \name{author}{1}{}{%
+      {{hash=RE}{%
+         family={Riehl},
+         familyi={R\bibinitperiod},
+         given={Emily},
+         giveni={E\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {Dover Publications}%
+    }
+    \strng{namehash}{RE1}
+    \strng{fullhash}{RE1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{labelalpha}{Rie16}
+    \field{sortinit}{R}
+    \field{sortinithash}{R}
+    \field{title}{Category theory in context}
+    \list{location}{1}{%
+      {Mineola, New York}%
+    }
+    \field{year}{2016}
+  \endentry
+\enddatalist
+\endinput

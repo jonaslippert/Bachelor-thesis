@@ -1,0 +1,813 @@
+\documentclass{article}
+
+\title{Formalisation of the Yoneda-Lemma in \Naproche}
+\author{Jonas Lippert}
+\date{2021}
+
+\usepackage{tikz-cd}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{naproche}
+\usepackage{bbm}
+\usepackage{hyperref}
+
+
+\newcommand{\mcirc}{\circ_{c}}
+\newcommand{\inn}{~\epsilon~}
+\newcommand{\innn}{~\epsilon~} % "... is an arrow and \inn ..."
+
+
+\newcommand{\Naproche}{$\mathbbm{N}$aproche}
+
+
+\begin{document}
+	
+	\maketitle
+	
+	
+
+	\newpage
+	
+	\section{Categories}
+	\begin{comment}
+	\begin{forthel}
+	[synonym arrow/-s][synonym category/categories][synonym functor/-s]
+	
+	[checktime 10]
+	[timelimit 10]
+	[depthlimit 10]
+	[checkdepth 10]
+	\end{forthel}
+	\end{comment}
+	
+	\begin{forthel}
+		
+		\begin{signature} An arrow is a notion. \end{signature}
+		\begin{signature} A collection of arrows is a notion. \end{signature}
+		
+		Let $f,g,h$ denote arrows.
+		Let $C,D$ denote collection of arrows.
+		
+		\begin{signature} $f\inn C$ is an atom. \end{signature}
+		
+		\begin{axiom}
+			$C = D \iff (f\inn C \iff f \inn D)$.
+		\end{axiom}
+		
+		\begin{signature} $s[f]$ is an arrow. \end{signature}   
+		\begin{signature} $t[f]$ is an arrow. \end{signature}  
+		
+		\begin{signature} $g \mcirc f$ is an arrow.\end{signature}
+		
+		
+		\begin{definition} 
+			A category is a collection of arrows $C$ such that
+			
+			(for every arrow $f$ such that $f\inn C$ we have
+			
+			$s[f] \inn C$ and $t[f] \inn C$ and
+			$t[s[f]]=s[f]$ and $s[t[f]]=t[f]$ and
+			 
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{s[f]} \ar{rd}[swap]{f} & s[f] \ar{d}{f} \\ & t[f]
+				\end{tikzcd}
+			\end{center}	
+			and
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{f} & t[f] \ar{d}{t[f]} \\ & t[f]
+				\end{tikzcd}
+				)
+			\end{center}
+			and (for each arrow $f,g$ such that $f,g \inn C$ we have
+			
+			($t[f]=s[g] \implies$ (there is an arrow $h$ such that $h \inn C$ and 
+
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{h} & s[f] \ar{d}{g} \\ & t[g]
+				\end{tikzcd}
+			\end{center}						
+			
+			and for every arrow $k$ such that $k \inn C$ and $g \mcirc f = k$ we have $h=k$)))
+			
+			and for all arrows $f,g,h$ such that $f,g,h \inn C$ and $t[f]=s[g]$ and $t[g]=s[h]$
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{d}[swap]{(g \mcirc f)} & t[f] \ar{d}{(h \mcirc g)} \\ t[g] \ar{r}{h} & t[h]
+				\end{tikzcd}	.
+			\end{center}
+		                      		 
+		\end{definition}
+		
+
+	\end{forthel}
+	
+	\section{Construction of SET}
+	
+	\begin{comment}
+	\begin{forthel}
+	
+	Let $f \innn C$ stand for ($f$ is an arrow such that $f \inn C$).
+	
+	\end{forthel}
+	\end{comment}
+	
+	\begin{forthel}
+		
+
+		\begin{definition} 
+			An sset is a set $x$ such that $x$ is an element of some set.
+		\end{definition}
+		
+		Let $f,g,h$ denote functions.
+		
+		\begin{signature} 
+			$Cod(f)$ is a notion. 
+		\end{signature}
+
+		\begin{axiom} 
+			$Cod(f)$ is a set. 
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $x \in  Dom(f)$. $f(x) \in Cod(f)$.
+		\end{axiom}
+
+		\begin{axiom}[Ext]
+			Let $f,g$ be functions and $Dom(f) = Dom(g)$ and $Cod(f) = Cod(g)$.
+			Let $f(x) = g(x)$ for every element $x$ of $Dom(f)$.
+			$f = g$.
+		\end{axiom}
+		
+		\begin{definition} 
+			Let $Cod(f)=Dom(g)$. 
+			
+			$g \circ f$ is the function $h$ such that
+			$Dom(h)=Dom(f)$ and $Cod(h)=Cod(g)$ and $h(x)=g(f(x))$ for every element $x$ of $Dom(f)$.
+		\end{definition}
+		
+		\begin{lemma} 
+			Let $Cod(f)=Dom(g)$ and $Cod(g)=Dom(h)$.
+			
+			$h \circ (g \circ f) = (h \circ g) \circ f$.
+		\end{lemma}
+		
+		\begin{axiom}
+			Every function is an arrow.
+		\end{axiom}
+		
+		\begin{axiom}		
+			$s[f]$ is a function such that 
+			
+			$Dom(s[f])=Dom(f)=Cod(s[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$s[f](y)=y$ for every element $y$ of $Dom(f)$.
+		\end{axiom}
+		
+
+		\begin{axiom}		
+			$t[f]$ is a function such that 
+			
+			$Dom(t[f])=Cod(f)=Cod(t[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$t[f](y)=y$ for every element $y$ of $Cod(f)$.
+		\end{axiom}
+		
+		\begin{definition} 
+		\begin{center}
+			$SET = \{ $function $f \mid Dom(f)$ is an sset and $Cod(f)$ is an sset $\}$.
+		\end{center}
+			
+		\end{definition}
+		
+		\begin{axiom} 
+			$SET$ is a set.
+		\end{axiom}
+		
+		\begin{axiom} 
+			If $Dom(f), Cod(f)$ are sset then $f$ is setsized.
+		\end{axiom}
+		
+		\begin{lemma}
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f \in SET$.
+		\end{lemma}
+		
+
+		
+		\begin{axiom}
+			$SET$ is a collection of arrows.
+		\end{axiom}
+
+
+		
+		\begin{axiom}
+			Let $f$ be an arrow. $f \inn SET \iff f \in SET$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $f \innn SET$. $s[f]=Dom(f)$ and $t[f]=Cod(f)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f = g \mcirc f$.
+		\end{axiom}
+
+		\begin{lemma}
+		Let $f\in SET$. $s[f] \in SET$ and $t[f] \in SET$.
+		\end{lemma}
+		
+		\begin{theorem} 
+			$SET$ is a category.
+		\end{theorem}
+		\begin{proof}
+			
+			Let us show that for every arrow $f$ such that $f \inn SET$ we have
+			$s[f] \inn SET$ and $t[f] \inn SET$  
+			and $t[s[f]]=s[f]$ and $s[t[f]]=t[f]$  
+			and $f \mcirc s[f] = f$ and $t[f] \mcirc f = f$.
+			
+			Proof.
+			Let $f$ be an arrow such that $f \inn SET$.
+
+			$s[f] \inn SET$ and $t[f] \inn SET$.
+
+			%$t[s[f]],s[f],s[t[f]],t[f] \in SET$.
+			%$Dom(t[s[f]])=Dom(s[f])$. 
+			%$Cod(t[s[f]])=Cod(s[f])$. 
+			$$(t[s[f]](y)=s[f](y)$$ for every  $y \in Dom(f)$) and
+			$$s[t[f]](y)=t[f](y)$$ for any $y \in Cod(f)$.
+			
+			We have
+			$$((f \circ s[f])(y) = f(s[f](y)) = f(y)$$ and
+			$$(t[f] \circ f)(y) = t[f](f(y)) = f(y))$$
+			for every $y \in Dom(f)$.
+			Hence $f \circ s[f] = f$ and $t[f] \circ f = f$.
+			Thus
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{s[f]} \ar{rd}[swap]{f} & s[f] \ar{d}{f} \\ & t[f]
+				\end{tikzcd}
+			\end{center}
+			and
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{f} & t[f] \ar{d}{t[f]} \\ & t[f]
+				\end{tikzcd}	.
+			\end{center}
+			End.
+			
+
+			For each arrow $f,g$ such that $f,g \inn SET$ we have
+			
+			($t[f]=s[g] \implies$ (there is an arrow $h$ such that $h \inn SET$ and 
+
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{h} & s[f] \ar{d}{g} \\ & t[g]
+				\end{tikzcd}
+			\end{center}						
+			
+			and for every arrow $k$ such that $k \inn SET$ and $g \mcirc f = k$ we have $h=k$)).
+			%Proof. The thesis. End.
+			
+
+			Let us show that for all arrows $f,g,h$ such that $f,g,h \inn SET$ and t[f]=s[g] and t[g]=s[h]
+			we have $h \mcirc (g \mcirc f) = (h \mcirc g) \mcirc f$. 
+			
+			Proof.
+			Let $f,g,h$ be arrows such that $f,g,h \inn SET$ and t[f]=s[g] and t[g]=s[h].
+			$h \circ (g \circ f) = (h \circ g) \circ f$.
+			Therefore
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{d}[swap]{(g \mcirc f)} & t[f] \ar{d}{(h \mcirc g)} \\ t[g] \ar{r}{h} & t[h]
+				\end{tikzcd}.
+			\end{center}
+			End.
+
+
+		\end{proof}
+		
+
+
+	\end{forthel}
+	
+		
+	\section{Bijections}
+	
+	\begin{forthel}
+		
+		\begin{signature}
+			Let $Q,R$ be sets.
+			A bijection between $Q$ and $R$ is a notion.
+		\end{signature}
+
+		\begin{axiom}
+			Let $Q,R$ be sets.
+			Let $f$ be a function such that $Dom(f) = Q$ and $Cod(f)=R$.
+			Let $g$ be a function such that $Dom(g) = R$ and $g(y) \in Q$ for any element $y$ of $R$.
+			Let $f(g(y))=y$ for all elements $y$ of $Dom(g)$. 
+			Let $g(f(x))=x$ for all elements $x$ of $Dom(f)$.
+			Then $f$ is a bijection between $Q$ and $R$.
+		\end{axiom}
+		
+	\end{forthel}
+	
+	\section{Functors}
+	
+	\begin{forthel}
+		
+		\begin{signature} A functor is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F$ be a functor. Let $f$ be an arrow. $F[f]$ is an arrow.
+		\end{signature}
+		
+		\begin{definition}
+			Let $C,D$ be categories.
+			A functor from $C$ to $D$ is a functor $F$ such that
+			(for all arrows $f$ such that $f \inn C$ we have
+			$F[f] \inn D$
+			and $$F[s[f]] = s[F[f]]$$
+			and $$F[t[f]] = t[F[f]])$$
+			and for all arrows $f,g$ such that $f,g \inn C$ and $t[f]=s[g]$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar{r}{F[f]} \ar{rd}[swap]{F[g \mcirc f]} & F[t[f]] \ar{d}{F[g]} \\  & F[t[g]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+	\end{forthel}
+	
+	\section{Construction of the Hom Functor}
+	
+
+	
+	\begin{forthel}
+		
+		Let $C$ denote a category.	
+		
+		\begin{signature}
+			Let $c,x \innn C$. 
+			$Hom[C,c,x]$ is a collection of arrows such that $f \inn C$ for any arrow $f$ such that $f \inn Hom[C,c,x]$.
+		\end{signature}
+		
+		\begin{axiom} 
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			\begin{center}
+				$h \inn Hom[C,c,x]$ $\iff (s[h]=c$ and $t[h]=x$).
+			\end{center}
+		\end{axiom} 
+				
+		\begin{definition}
+			A locally small category is a category $C$ such that 
+			$Hom[C,c,f]$ is an element of SET for all arrows $c,f$ such that $c,f \inn C$.
+		\end{definition}
+		
+		
+		Let $C$ denote a locally small category.
+		
+		\begin{axiom}
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			$$h \in Dom(Hom[C,c,x]) \iff h \inn Hom[C,c,x].$$
+		\end{axiom}
+
+		
+		\begin{axiom}
+			Let $c,f \innn C$.
+			$$Dom(Hom[C,c,f]) = Hom[C,c,s[f]]$$ and 
+			$$Cod(Hom[C,c,f]) = Hom[C,c,t[f]]$$ and
+			$$Hom[C,c,f](h) = f \mcirc h$$ for each arrow $h$ such that $h \in Hom[C,c,s[f]]$.
+		\end{axiom}
+
+		\begin{axiom} 
+			Let $c,x \innn C$. Any element $h$ of $Dom(Hom[C,c,x])$ is an arrow.
+		\end{axiom}
+		
+		\begin{lemma}[funct]
+			Let $c,f,g \innn C$ and $t[f]=s[g]$.
+			$$Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f].$$
+		\end{lemma}
+		\begin{proof}
+		  $f \mcirc h \in Hom[C,c,s[g]]$ for each arrow $h$ such that $h \in Hom[C,c,s[f]]$.
+		  
+		  Proof. 
+		  Let $h$ be an arrow such that $h \in Hom[C,c,s[f]]$.
+		  $f \mcirc h$ is an arrow $e$ such that $s[e]=c$ and $t[e]=t[f]$. End.
+		  
+		($h$ is an arrow and
+		  $$(Hom[C,c,g] \circ Hom[C,c,f])(h)$$
+		  $$=Hom[C,c,g](Hom[C,c,f](h))$$
+		  $$=Hom[C,c,g](f \mcirc h) =g \mcirc (f \mcirc h)$$
+		  $$ = (g \mcirc f) \mcirc h = Hom[C,c,g \mcirc f](h))$$ for each element $h$ of $Hom[C,c,s[f]]$.
+		  %$$Hom[C,c,s[f]] = $$
+		  %$$Dom(Hom[C,c,g \mcirc f]) = Dom(Hom[C,c,g] \circ Hom[C,c,f]).$$  
+		  %$$Cod(Hom[C,c,g \mcirc f]) = Cod(Hom[C,c,g] \circ Hom[C,c,f]).$$
+		  Therefore the thesis (by Ext).
+		\end{proof}
+		
+
+		
+		\begin{definition} 
+			Let $c \innn C$.
+			$HomF[C,c]$ is a functor such that 
+			for each arrow $f$ such that $f \inn C$ we have $$HomF[C,c][f] = Hom[C,c,f].$$
+		\end{definition}
+		
+		
+		
+		\begin{theorem} 
+			Let $c \innn C$. 
+			$HomF[C,c]$ is a functor from $C$ to $SET$.
+		\end{theorem}
+		\begin{proof}
+			
+			For all arrows $f$ such that $f \inn C$ we have
+			$$HomF[C,c][f] \inn SET$$
+			and $$HomF[C,c][s[f]] = s[HomF[C,c][f]]$$
+			and $$HomF[C,c][t[f]] = t[HomF[C,c][f]].$$
+			Proof.
+			  Let $f\innn C$.
+			  $$HomF[C,c][s[f]] = Hom[C,c,s[f]]= $$
+			  $$Dom(Hom[C,c,f]) = s[Hom[C,c,f]] $$
+			  $$= s[HomF[C,c][f]].$$
+			End.
+			
+			For all arrows $f,g$ such that $f,g \inn C$ and $t[f]=s[g]$ we have
+			$$HomF[C,c][g \mcirc f] = HomF[C,c][g] \mcirc HomF[C,c][f].$$
+			Proof. Let $f,g \innn C$ and $t[f]=s[g]$.
+			  $$Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f]$$ (by funct).
+			End.
+			
+		\end{proof}
+
+
+
+%\begin{lemma}
+%Let $c,d \innn C$ and $f \innn Hom[C,c,d]$.
+%$s[c]=c$ and $s[d]=d$.
+%\end{lemma}
+
+		
+	\end{forthel}
+	
+
+	\section{Natural Transformations}
+	
+	\begin{forthel}
+		
+		Let $C,D$ denote categories.
+		
+		\begin{signature} A transformation is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$T[C,D,F,G,\alpha]$ is a collection of arrows.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation. Let $d \innn C$.
+			$T[C,D,F,G,\alpha,d]$ is an arrow.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$$T[C,D,F,G,\alpha,d] \inn T[C,D,F,G,\alpha]$$ for every arrow $d$ such that $d \inn C$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			For any arrow $f$ such that $f \inn T[C,D,F,G,\alpha]$ there exists an arrow $d$ such that
+			$d \inn C$ and $T[C,D,F,G,\alpha,d] = f$.
+		\end{axiom}
+		
+
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			A natural transformation from $F$ to $G$ over $C$ and $D$ is a transformation $\alpha$ such that 
+			
+			(for any arrow $d$ such that $d \inn C$ we have
+			$$T[C,D,F,G,\alpha,d] \inn D)$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$s[T[C,D,F,G,\alpha,d]] = F[d])$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$t[T[C,D,F,G,\alpha,d]] = G[d])$$
+			
+			and for any arrow $f$ such that $f \inn C$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar{r}{F[f]} \ar{d}[swap]{T[C,D,F,G,\alpha,s[f]]} & F[t[f]] \ar{d}{T[C,D,F,G,\alpha,t[f]]} \\ G[s[f]] \ar{r}{G[f]} & G[t[f]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			\begin{center}
+			$Nat[C,D,F,G] = \{$ transformation $\alpha \mid \alpha$ is a natural transformation from $F$ to $G$ over $C$ and $D$ $\}$.
+			\end{center}
+			
+		\end{definition}
+		
+		\begin{axiom} Let $F,G$ be functors from $C$ to $D$. $Nat[C,D,F,G]$ is a set.
+		\end{axiom}
+		
+
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha, \beta \in Nat[C,D,F,G]$.
+			$$\alpha = \beta \iff T[C,D,F,G,\alpha] = T[C,D,F,G,\beta].$$
+		\end{axiom}
+
+
+		
+	\end{forthel}
+
+	
+	\section{Yoneda}
+	\subsection{Construction of the bijection}
+	\begin{forthel}
+		
+		Let $C$ denote a locally small category.
+	
+		\begin{signature}
+			$\Psi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Psi$ is a function and
+			$Dom(\Psi) = F[s[c]]$ and $\Psi(x)$ is a transformation for every element $x$ of $Dom(\Psi)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$.
+			Let $x \in Dom(\Psi)$. 
+			$T[C,SET,HomF[C,c],F,\Psi(x),d]$ is a function and
+			$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) = Hom[C,c,d]$$ and 
+			$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d].$$
+		\end{axiom}
+		
+		\begin{axiom}[PsiDef]
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$ and $f\innn Hom[C,c,d].$
+			Let $x \in Dom(\Psi)$. $$T[C,SET,HomF[C,c],F,\Psi(x),d](f) = F[f](x).$$
+		\end{axiom}
+		
+		%\begin{lemma}[vllunnoetig]
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $x \in Dom(\Psi)$. Let $d \innn C$.
+		%	$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET$.
+		%\end{lemma}
+		%\begin{proof}
+		%	$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) = Hom[C,c,d]$ and 
+		%	$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d]$.
+		%	$Hom[C,c,d]$ and $F[d]$ is an sset.
+		%	$T[C,SET,HomF[C,c],F,\Psi(x),d]$ is a function.
+		%\end{proof}
+
+		%\begin{axiom} 
+		%Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. 
+		%Let $x \in Dom(\Psi)$.
+		%$\Psi(x)$ is setsized.
+		%\end{axiom}
+
+		\begin{signature} $\Phi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Phi$ is a function and
+		$$Dom(\Phi) = Nat[C,SET,HomF[C,c],F]$$ and $$Cod(\Phi) = F[s[c]].$$
+		\end{axiom}
+
+		%\begin{lemma}
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		%	$T[C,SET,HomF[C,c],F,\alpha,s[c]] \in SET$ and $s[c] \in Dom(T[C,SET,HomF[C,c],F,\alpha,s[c]]).
+		%\end{lemma}
+		%\begin{proof}
+		% \alpha is a natural transformation from HomF[C,c] to F over C and SET.
+		%	for any arrow $d$ such that $d \inn C$ and s[d]=d we have
+		%	$T[C,SET,HomF[C,c],F,\alpha,d] \inn SET$$.
+		%\end{proof}
+
+		\begin{axiom}[PhiDef]
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$.
+		Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		$$\Phi(\alpha) = T[C,SET,HomF[C,c],F,\alpha,s[c]](s[c]).$$
+		\end{axiom}
+		
+
+
+	\end{forthel}
+	
+\subsection{Result}
+
+	\begin{forthel}
+	
+		\begin{lemma}[Yoneda]
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$ and $s[c]=c$. 
+		\begin{center}
+			$\Phi$ is a bijection between $Nat[C,SET,HomF[C,c],F]$ and $F[c]$.
+		\end{center}							
+		\end{lemma}
+		\begin{proof}
+
+
+		Let us show that for every element $x$ of $Dom(\Psi)$
+		\begin{center}		
+			$\Psi(x)$ is a natural transformation from $HomF[C,c]$ to $F$ over $C$ and $SET$.
+		\end{center}
+		
+   			Proof.
+   			Let $x\in Dom(\Psi)$.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ and s[d]=d we have
+			$$T[C,SET,HomF[C,c],F,\Psi(x),d] \inn SET.$$ 
+			Proof.
+			Let $d \innn C$ and s[d]=d.
+			$$Hom[C,c,d] = Dom(T[C,SET,HomF[C,c],F,\Psi(x),d])$$ 
+			and $$F[d] = Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]).$$			
+			End.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ we have
+			$$s[T[C,SET,HomF[C,c],F,\Psi(x),d]] = HomF[C,c][d].$$
+			Proof.
+			Let $d \innn C$.
+			%$$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET.$$			
+			$$s[T[C,SET,HomF[C,c],F,\Psi(x),d]] =$$			
+			$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) =$$			
+			$$Hom[C,c,d] = HomF[C,c][d].$$
+			
+			End.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ we have
+			$$t[T[C,SET,HomF[C,c],F,\Psi(x),d]] = F[d].$$
+			Proof.
+			Let $d \innn C$.
+			%$$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET.$$			
+			$$t[T[C,SET,HomF[C,c],F,\Psi(x),d]] =$$ 			
+			$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d].$$			
+			End.
+			
+			Let us show that for any arrow $g$ such that $g \inn C$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					Hom[C,c,s[g]] \ar{r}[yshift=2mm]{T[C,SET,HomF[C,c],F,\Psi(x),s[g]]} \ar{d}[swap]{HomF[C,c][g]} & F[s[g]] \ar{d}{F[g]} \\ Hom[C,c,t[g]] \ar{r}[swap,yshift=-2mm]{T[C,SET,HomF[C,c],F,\Psi(x),t[g]]} & F[t[g]]
+				\end{tikzcd}.
+			\end{center}
+		
+			Proof.
+			Let $g \innn C$.
+			$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])(f)$$
+			$$=T[C,SET,HomF[C,c],F,\Psi(x),t[g]](Hom[C,c,g](f))$$
+			$$=T[C,SET,HomF[C,c],F,\Psi(x),t[g]](g \mcirc f)$$
+			$$=F[g\mcirc f](x) = (F[g] \mcirc F[f])(x)$$ 
+			for all arrows $f$ such that $f \inn Dom(HomF[C,c][g])$.
+			%Proof. The thesis. End.
+			%Cod(T[C,SET,HomF[C,c],F,\Psi(x),s[g]]) = Dom(F[g]).
+			$$(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]])(f)$$
+			$$=F[g](T[C,SET,HomF[C,c],F,\Psi(x),s[g]](f))$$
+			$$=F[g](F[f](x)) = (F[g] \mcirc F[f])(x)$$ 
+			for all arrows $f$ such that $f \inn Dom(T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$
+			%Proof. The thesis. End.
+			%$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])(f) =$$ 
+			%$$(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]])(f)$$
+			%for any element $f$ of $Dom(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g]).$
+			%$T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g]$ and $F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]$ are 					functions.
+			%$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$=Dom(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$= Cod(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$= (F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%Proof. The thesis(by Ext). End.
+			
+			End.
+			
+		QED.
+
+		%For every element $x$ of $Dom(\Psi)$ $\Psi(x) \in Nat[C,SET,HomF[C,c],F]$.
+
+		Let us show that for every element $x$ of $Dom(\Psi)$ 
+		$$\Phi(\Psi(x)) = x.$$
+
+		
+		Proof.
+		Let $x \in Dom(\Psi)$.
+		%$\Psi(x) \in Nat[C,SET,HomF[C,c],F].$
+		$$\Phi(\Psi(x)) = T[C,SET,HomF[C,c],F,\Psi(x),s[c]](s[c]) = $$
+		$$F[s[c]](x) = s[F[c]](x) = x.$$
+		QED.
+
+		Let us show that for every element $\alpha$ of $Nat[C,SET,HomF[C,c],F]$
+		$$\Psi(\Phi(\alpha)) = \alpha.$$
+		
+		Proof.
+		
+		Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		
+		For all arrows $d,f$ such that $d \inn C$ and $f\inn Hom[C,c,d]$ we have
+		$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$ 
+		$$=F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		(by PsiDef).
+		%Proof. Therefore the thesis.	End. 
+
+		For all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$ we have
+		\begin{center}
+			\begin{tikzcd} 
+				Hom[C,c,c] \ar{r}[yshift=2mm]{T[C,SET,HomF[C,c],F,\alpha,c]} \ar{d}[swap]{Hom[C,c,f]} & F[c] \ar{d}{F[f]} \\ Hom[C,c,d] \ar{r}[swap,yshift=-2mm]{T[C,SET,HomF[C,c],F,\alpha,d]} & F[d]
+			\end{tikzcd}.
+		\end{center}
+	
+		%$$s[F[f]]= t[T[C,SET,HomF[C,c],F,\alpha,c]]$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f], T[C,SET,HomF[C,c],F,\alpha,c] \inn SET$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$Dom(F[f])= Cod(T[C,SET,HomF[C,c],F,\alpha,c])$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f] \mcirc T[C,SET,HomF[C,c],F,\alpha,c]$$ 
+		%$$= F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c]$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+
+		%$$T[C,SET,HomF[C,c],F,\alpha,d] \mcirc Hom[C,c,f]$$=$$T[C,SET,HomF[C,c],F,\alpha,d] \circ Hom[C,c,f]$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+
+		%$$(F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c])(s[c])$$
+		%$$=(T[C,SET,HomF[C,c],F,\alpha,d] \circ Hom[C,c,f])(s[c])$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in F[s[c]]$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in Dom(F[f])$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$(F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c])(s[c])$$
+		%$$=F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		%$$=T[C,SET,HomF[C,c],F,\alpha,d](Hom[C,c,f](s[c]))$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+
+		Hence
+		$$F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		$$=T[C,SET,HomF[C,c],F,\alpha,d](f)$$
+		for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+		
+		%For all arrows $d,f$ such that $d \inn C$ and $f\inn Hom[C,c,d]$ we have
+		%$$T[C,SET,HomF[C,c],F,\alpha,d](f) =$$
+		%$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$.
+		%Proof. Therefore the thesis.	End. 
+
+		%$\alpha$ is a natural transformation from $HomF[C,c]$ to $F$ over $C$ and $SET$.
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in Dom(\Psi).$$
+		Therefore
+		$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]$$
+		$$=T[C,SET,HomF[C,c],F,\alpha,d]$$
+		for all arrows $d$ such that $d\inn C$.
+		%Proof.
+		%Let $d \innn C$. 
+		%$$s[T[C,SET,HomF[C,c],F,\alpha,d]] = Hom[C,c,d].$$
+		%$$Dom(T[C,SET,HomF[C,c],F,\alpha,d]) = Hom[C,c,d].$$
+		%Proof. Therefore the thesis. End.
+		%$T[C,SET,HomF[C,c],F,\alpha,d]$, $T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]$ are functions.
+		%$$Dom(T[C,SET,HomF[C,c],F,\alpha,d]) = $$
+		%$$Dom(T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]).$$
+		%$$Cod(T[C,SET,HomF[C,c],F,\alpha,d]) = $$
+		%$$Cod(T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]).$$  
+		%For any element $f$ of $Dom(T[C,SET,HomF[C,c],F,\alpha,d])$ we have
+		%$$T[C,SET,HomF[C,c],F,\alpha,d](f) =$$
+		%$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$.
+		%Therefore the thesis (by Ext).	End.
+
+		%$$\Psi(\Phi(\alpha)) = \alpha \iff $$
+		%$$T[C,SET,HomF[C,c],F,\Psi(\Phi(\alpha))] = T[C,SET,HomF[C,c],F,\alpha].$$
+		
+		$$\Psi(\Phi(\alpha)) = \alpha \iff $$
+		$$T[C,SET,HomF[C,c],F,\Psi(\Phi(\alpha)),d] = T[C,SET,HomF[C,c],F,\alpha,d]$$
+		for all arrows $d$ such that $d\inn C$. Thus we have the thesis.
+		QED.
+
+		%$Nat[C,SET,HomF[C,c],F]$ and $F[c]$ are sets.
+		%$\Phi$ is a function. $\Psi$ is a function. 
+		%$Cod(\Phi)=Dom(\Psi)$. $\Phi(\Psi(y))=y$ for all elements $y of Cod(\Phi)$. 
+		%$\Psi(\Phi(x))=x$ for all elements $x$ of $Dom(\Phi)$.
+		
+
+		\end{proof}
+
+
+	\end{forthel}
+	
+\end{document}
+

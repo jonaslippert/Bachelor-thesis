@@ -1,0 +1,222 @@
+jlippert@jlippert-ThinkPad-P53s:~/Schreibtisch/naproche$ stack exec Naproche-SAD -- Yoneda.ftl.tex
+[Parser] "Yoneda.ftl.tex"
+parsing successful
+[Reasoner] "Yoneda.ftl.tex"
+verification started
+[Reasoner] "Yoneda.ftl.tex" (line 149, column 5)
+goal:  h \circ (g \circ f) = (h \circ g) \circ f .
+[Reasoner] "Yoneda.ftl.tex" (line 193, column 44)
+goal:  g \circ f \in SET .
+[Reasoner] "Yoneda.ftl.tex" (line 217, column 20)
+goal:  s[f] \in SET and t[f] \in SET .
+[Reasoner] "Yoneda.ftl.tex" (line 233, column 5)
+goal:  s[f] \inn SET and t[f] \inn SET .
+[Reasoner] "Yoneda.ftl.tex" (line 235, column 6)
+goal:  t[s[f]],s[f],s[t[f]],t[f] \in SET .
+[Reasoner] "Yoneda.ftl.tex" (line 236, column 6)
+goal:  Dom(t[s[f]])=Dom(s[f]) .
+[Reasoner] "Yoneda.ftl.tex" (line 237, column 6)
+goal:  Cod(t[s[f]])=Cod(s[f]) .
+[Reasoner] "Yoneda.ftl.tex" (line 238, column 6)
+goal:  (t[s[f]](y)=s[f](y) for every y \in Dom(f) ) and s[t[f]](y)=t[f](y) for any y \in Cod(f) .
+[Reasoner] "Yoneda.ftl.tex" (line 241, column 4)
+goal:  We have ((f \circ s[f])(y) = f(s[f](y)) = f(y) and (t[f] \circ f)(y) = t[f](f(y)) = f(y)) for every y \in Dom(f) .
+[Reasoner] "Yoneda.ftl.tex" (line 245, column 4)
+goal:  Hence f \circ s[f] = f and t[f] \circ f = f .
+[Reasoner] "Yoneda.ftl.tex" (line 246, column 4)
+goal:  Thus f = f \mcirc s[f] and f = t[f] \mcirc f .
+[Reasoner] "Yoneda.ftl.tex" (line 225, column 21)
+goal:  for every arrow f such that f \inn SET we have s[f] \inn SET and t[f] \inn SET and t[s[f]]=s[f] and s[t[f]]=t[f] and f \mcirc s[f] = f and t[f] \mcirc f = f .
+[Reasoner] "Yoneda.ftl.tex" (line 266, column 12)
+goal:  The thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 257, column 4)
+goal:  For each arrow f,g such that f,g \inn SET we have ( t[f]=s[g] => (there is an arrow h such that h \inn SET and h = g \mcirc f and for every arrow k such that k \inn SET and g \mcirc f = k we have h=k )).
+[Reasoner] "Yoneda.ftl.tex" (line 274, column 5)
+goal:  h \circ (g \circ f) = (h \circ g) \circ f .
+[Reasoner] "Yoneda.ftl.tex" (line 275, column 4)
+goal:  Therefore (h \mcirc g) \mcirc f = h \mcirc (g \mcirc f).
+[Reasoner] "Yoneda.ftl.tex" (line 269, column 21)
+goal:  for all arrows f,g,h such that f,g,h \inn SET and t[f]=s[g] and t[g]=s[h] we have h \mcirc (g \mcirc f) = (h \mcirc g) \mcirc f .
+[Reasoner] "Yoneda.ftl.tex" (line 221, column 5)
+goal:  SET is a category.
+[Reasoner] "Yoneda.ftl.tex" (line 388, column 6)
+goal:  f \mcirc h is an arrow e such that s[e]=c and t[e]=t[f] .
+[Reasoner] "Yoneda.ftl.tex" (line 384, column 6)
+goal:  f \mcirc h \in Hom[C,c,s[g]] for each arrow h such that h \in Hom[C,c,s[f]] .
+[Reasoner] "Yoneda.ftl.tex" (line 390, column 3)
+goal:  ( h is an arrow and (Hom[C,c,g] \circ Hom[C,c,f])(h) =Hom[C,c,g](Hom[C,c,f](h)) =Hom[C,c,g](f \mcirc h) =g \mcirc (f \mcirc h) = (g \mcirc f) \mcirc h = Hom[C,c,g \mcirc f](h)) for each element h of Hom[C,c,s[f]] .
+[Reasoner] "Yoneda.ftl.tex" (line 395, column 8)
+goal:  Hom[C,c,s[f]] = Dom(Hom[C,c,g \mcirc f]) = Dom(Hom[C,c,g] \circ Hom[C,c,f]).
+[Reasoner] "Yoneda.ftl.tex" (line 397, column 8)
+goal:  Cod(Hom[C,c,g \mcirc f]) = Cod(Hom[C,c,g] \circ Hom[C,c,f]).
+[Reasoner] "Yoneda.ftl.tex" (line 398, column 5)
+goal:  Therefore the thesis (by Ext).
+[Reasoner] "Yoneda.ftl.tex" (line 381, column 6)
+goal:  Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f].
+[Reasoner] "Yoneda.ftl.tex" (line 423, column 8)
+goal:  HomF[C,c][s[f]] = Hom[C,c,s[f]]= Dom(Hom[C,c,f]) = s[Hom[C,c,f]] = s[HomF[C,c][f]].
+[Reasoner] "Yoneda.ftl.tex" (line 417, column 4)
+goal:  For all arrows f such that f \inn C we have HomF[C,c][f] \inn SET and HomF[C,c][s[f]] = s[HomF[C,c][f]] and HomF[C,c][t[f]] = t[HomF[C,c][f]].
+[Reasoner] "Yoneda.ftl.tex" (line 431, column 8)
+goal:  Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f] (by funct).
+[Reasoner] "Yoneda.ftl.tex" (line 428, column 4)
+goal:  For all arrows f,g such that f,g \inn C and t[f]=s[g] we have HomF[C,c][g \mcirc f] = HomF[C,c][g] \mcirc HomF[C,c][f].
+[Reasoner] "Yoneda.ftl.tex" (line 413, column 5)
+goal:  HomF[C,c] is a functor from C to SET .
+[Reasoner] "Yoneda.ftl.tex" (line 440, column 3)
+goal:  s[c]=c and s[d]=d .
+[Reasoner] "Yoneda.ftl.tex" (line 553, column 6)
+goal:  Dom(T[C,SET,HomF[C,c],F,texPsi (x),d]) = Hom[C,c,d] and Cod(T[C,SET,HomF[C,c],F,texPsi (x),d]) = F[d] .
+[Reasoner] "Yoneda.ftl.tex" (line 555, column 6)
+goal:  Hom[C,c,d] and F[d] is an sset.
+[Reasoner] "Yoneda.ftl.tex" (line 556, column 6)
+goal:  T[C,SET,HomF[C,c],F,texPsi (x),d] is a function.
+[Reasoner] "Yoneda.ftl.tex" (line 550, column 6)
+goal:  T[C,SET,HomF[C,c],F,texPsi (x),d] \in SET .
+[Reasoner] "Yoneda.ftl.tex" (line 579, column 5)
+goal:  texalpha is a natural transformation from HomF[C,c] to F over C and SET.
+[Reasoner] "Yoneda.ftl.tex" (line 580, column 5)
+goal:  for any arrow d such that d \inn C and s[d]=d we have T[C,SET,HomF[C,c],F,texalpha ,d] \inn SET .
+[Reasoner] "Yoneda.ftl.tex" (line 576, column 6)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,s[c]] \in SET and s[c] \in Dom(T[C,SET,HomF[C,c],F,texalpha ,s[c]]).
+[Reasoner] "Yoneda.ftl.tex" (line 619, column 6)
+goal:  Hom[C,c,d] = Dom(T[C,SET,HomF[C,c],F,texPsi (x),d]) and F[d] = Cod(T[C,SET,HomF[C,c],F,texPsi (x),d]).
+[Reasoner] "Yoneda.ftl.tex" (line 615, column 21)
+goal:  for any arrow d such that d \inn C and s[d]=d we have T[C,SET,HomF[C,c],F,texPsi (x),d] \inn SET.
+[Reasoner] "Yoneda.ftl.tex" (line 627, column 7)
+goal:  T[C,SET,HomF[C,c],F,texPsi (x),d] \in SET.
+[Reasoner] "Yoneda.ftl.tex" (line 628, column 6)
+goal:  s[T[C,SET,HomF[C,c],F,texPsi (x),d]] = Dom(T[C,SET,HomF[C,c],F,texPsi (x),d]) = Hom[C,c,d] = HomF[C,c][d].
+[Reasoner] "Yoneda.ftl.tex" (line 623, column 21)
+goal:  for any arrow d such that d \inn C we have s[T[C,SET,HomF[C,c],F,texPsi (x),d]] = HomF[C,c][d].
+[Reasoner] "Yoneda.ftl.tex" (line 638, column 7)
+goal:  T[C,SET,HomF[C,c],F,texPsi (x),d] \in SET.
+[Reasoner] "Yoneda.ftl.tex" (line 639, column 6)
+goal:  t[T[C,SET,HomF[C,c],F,texPsi (x),d]] = Cod(T[C,SET,HomF[C,c],F,texPsi (x),d]) = F[d].
+[Reasoner] "Yoneda.ftl.tex" (line 634, column 21)
+goal:  for any arrow d such that d \inn C we have t[T[C,SET,HomF[C,c],F,texPsi (x),d]] = F[d].
+[Reasoner] "Yoneda.ftl.tex" (line 655, column 12)
+goal:  The thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 650, column 6)
+goal:  (T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g])(f) =T[C,SET,HomF[C,c],F,texPsi (x),t[g]](Hom[C,c,g](f)) =T[C,SET,HomF[C,c],F,texPsi (x),t[g]](g \mcirc f) =F[g\mcirc f](x) = (F[g] \mcirc F[f])(x) for all arrows f such that f \inn Dom(HomF[C,c][g]) .
+[Reasoner] "Yoneda.ftl.tex" (line 656, column 5)
+goal:  Cod(T[C,SET,HomF[C,c],F,texPsi (x),s[g]]) = Dom(F[g]).
+[Reasoner] "Yoneda.ftl.tex" (line 661, column 12)
+goal:  The thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 657, column 6)
+goal:  (F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]])(f) =F[g](T[C,SET,HomF[C,c],F,texPsi (x),s[g]](f)) =F[g](F[f](x)) = (F[g] \mcirc F[f])(x) for all arrows f such that f \inn Dom(T[C,SET,HomF[C,c],F,texPsi (x),s[g]]).
+[Reasoner] "Yoneda.ftl.tex" (line 662, column 7)
+goal:  (T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g])(f) = (F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]])(f) for any element f of Dom(T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g]).
+[Reasoner] "Yoneda.ftl.tex" (line 665, column 6)
+goal:  T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g] and F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]] are functions.
+[Reasoner] "Yoneda.ftl.tex" (line 666, column 7)
+goal:  Dom(T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g]) =Dom(F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]]).
+[Reasoner] "Yoneda.ftl.tex" (line 668, column 7)
+goal:  Cod(T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g]) = Cod(F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]]).
+[Reasoner] "Yoneda.ftl.tex" (line 672, column 12)
+goal:  The thesis(by Ext).
+[Reasoner] "Yoneda.ftl.tex" (line 670, column 7)
+goal:  (T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \circ HomF[C,c][g]) = (F[g] \circ T[C,SET,HomF[C,c],F,texPsi (x),s[g]]).
+[Reasoner] "Yoneda.ftl.tex" (line 643, column 21)
+goal:  for any arrow g such that g \inn C we have F[g] \mcirc T[C,SET,HomF[C,c],F,texPsi (x),s[g]] = T[C,SET,HomF[C,c],F,texPsi (x),t[g]] \mcirc HomF[C,c][g].
+[Reasoner] "Yoneda.ftl.tex" (line 607, column 20)
+goal:  for every element x of Dom(texPsi ) texPsi (x) is a natural transformation from HomF[C,c] to F over C and SET .
+[Reasoner] "Yoneda.ftl.tex" (line 678, column 4)
+goal:  For every element x of Dom(texPsi ) texPsi (x) \in Nat[C,SET,HomF[C,c],F] .
+[Reasoner] "Yoneda.ftl.tex" (line 686, column 5)
+goal:  texPsi (x) \in Nat[C,SET,HomF[C,c],F].
+[Reasoner] "Yoneda.ftl.tex" (line 687, column 5)
+goal:  texPhi (texPsi (x)) = T[C,SET,HomF[C,c],F,texPsi (x),s[c]](s[c]) = F[s[c]](x) = s[F[c]](x) = x.
+[Reasoner] "Yoneda.ftl.tex" (line 680, column 20)
+goal:  for every element x of Dom(texPsi ) texPhi (texPsi (x)) = x.
+[Reasoner] "Yoneda.ftl.tex" (line 702, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 698, column 3)
+goal:  For all arrows d,f such that d \inn C and f\inn Hom[C,c,d] we have T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d](f) =F[f](T[C,SET,HomF[C,c],F,texalpha ,c](s[c])) (by PsiDef).
+[Reasoner] "Yoneda.ftl.tex" (line 704, column 3)
+goal:  For all arrows d,f such that d\inn C and f\inn Hom[C,c,d] we have F[f] \mcirc T[C,SET,HomF[C,c],F,texalpha ,c] = T[C,SET,HomF[C,c],F,texalpha ,d] \mcirc Hom[C,c,f].
+[Reasoner] "Yoneda.ftl.tex" (line 709, column 6)
+goal:  s[F[f]]= t[T[C,SET,HomF[C,c],F,texalpha ,c]] for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 711, column 6)
+goal:  F[f], T[C,SET,HomF[C,c],F,texalpha ,c] \inn SET for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 713, column 6)
+goal:  Dom(F[f])= Cod(T[C,SET,HomF[C,c],F,texalpha ,c]) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 715, column 6)
+goal:  F[f] \mcirc T[C,SET,HomF[C,c],F,texalpha ,c] = F[f] \circ T[C,SET,HomF[C,c],F,texalpha ,c] for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 719, column 6)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,d] \mcirc Hom[C,c,f] = T[C,SET,HomF[C,c],F,texalpha ,d] \circ Hom[C,c,f] for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 725, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 722, column 6)
+goal:  (F[f] \circ T[C,SET,HomF[C,c],F,texalpha ,c])(s[c]) =(T[C,SET,HomF[C,c],F,texalpha ,d] \circ Hom[C,c,f])(s[c]) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 729, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 727, column 6)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,c](s[c]) \in F[s[c]] for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 730, column 6)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,c](s[c]) \in Dom(F[f]) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 732, column 6)
+goal:  (F[f] \circ T[C,SET,HomF[C,c],F,texalpha ,c])(s[c]) =F[f](T[C,SET,HomF[C,c],F,texalpha ,c](s[c])) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 738, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 735, column 6)
+goal:  F[f](T[C,SET,HomF[C,c],F,texalpha ,c](s[c])) =T[C,SET,HomF[C,c],F,texalpha ,d](Hom[C,c,f](s[c])) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 744, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 740, column 3)
+goal:  Hence F[f](T[C,SET,HomF[C,c],F,texalpha ,c](s[c])) =T[C,SET,HomF[C,c],F,texalpha ,d](f) for all arrows d,f such that d\inn C and f\inn Hom[C,c,d] .
+[Reasoner] "Yoneda.ftl.tex" (line 749, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 746, column 4)
+goal:  For all arrows d,f such that d \inn C and f\inn Hom[C,c,d] we have T[C,SET,HomF[C,c],F,texalpha ,d](f) = T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d](f) .
+[Reasoner] "Yoneda.ftl.tex" (line 751, column 5)
+goal:  texalpha is a natural transformation from HomF[C,c] to F over C and SET .
+[Reasoner] "Yoneda.ftl.tex" (line 752, column 6)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,c](s[c]) \in Dom(texPsi ).
+[Reasoner] "Yoneda.ftl.tex" (line 759, column 6)
+goal:  s[T[C,SET,HomF[C,c],F,texalpha ,d]] = Hom[C,c,d].
+[Reasoner] "Yoneda.ftl.tex" (line 761, column 11)
+goal:  Therefore the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 760, column 6)
+goal:  Dom(T[C,SET,HomF[C,c],F,texalpha ,d]) = Hom[C,c,d].
+[Reasoner] "Yoneda.ftl.tex" (line 762, column 5)
+goal:  T[C,SET,HomF[C,c],F,texalpha ,d] , T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d] are functions.
+[Reasoner] "Yoneda.ftl.tex" (line 763, column 6)
+goal:  Dom(T[C,SET,HomF[C,c],F,texalpha ,d]) = Dom(T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d]).
+[Reasoner] "Yoneda.ftl.tex" (line 765, column 6)
+goal:  Cod(T[C,SET,HomF[C,c],F,texalpha ,d]) = Cod(T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d]).
+[Reasoner] "Yoneda.ftl.tex" (line 767, column 4)
+goal:  For any element f of Dom(T[C,SET,HomF[C,c],F,texalpha ,d]) we have T[C,SET,HomF[C,c],F,texalpha ,d](f) = T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d](f) .
+[Reasoner] "Yoneda.ftl.tex" (line 770, column 4)
+goal:  Therefore the thesis (by Ext).
+[Reasoner] "Yoneda.ftl.tex" (line 753, column 3)
+goal:  Therefore T[C,SET,HomF[C,c],F,texPsi (T[C,SET,HomF[C,c],F,texalpha ,c](s[c])),d] =T[C,SET,HomF[C,c],F,texalpha ,d] for all arrows d such that d\inn C .
+[Reasoner] "Yoneda.ftl.tex" (line 772, column 6)
+goal:  texPsi (texPhi (texalpha )) = texalpha <=> T[C,SET,HomF[C,c],F,texPsi (texPhi (texalpha ))] = T[C,SET,HomF[C,c],F,texalpha ].
+[Reasoner] "Yoneda.ftl.tex" (line 775, column 5)
+goal:  texPsi (texPhi (texalpha )) = texalpha <=> T[C,SET,HomF[C,c],F,texPsi (texPhi (texalpha )),d] = T[C,SET,HomF[C,c],F,texalpha ,d] for all arrows d such that d\inn C .
+[Reasoner] "Yoneda.ftl.tex" (line 777, column 43)
+goal:  Thus we have the thesis.
+[Reasoner] "Yoneda.ftl.tex" (line 691, column 20)
+goal:  for every element texalpha of Nat[C,SET,HomF[C,c],F] texPsi (texPhi (texalpha )) = texalpha .
+[Reasoner] "Yoneda.ftl.tex" (line 780, column 5)
+goal:  Nat[C,SET,HomF[C,c],F] and F[c] are sets.
+[Reasoner] "Yoneda.ftl.tex" (line 781, column 5)
+goal:  texPhi is a function.
+[Reasoner] "Yoneda.ftl.tex" (line 781, column 27)
+goal:  texPsi is a function.
+[Reasoner] "Yoneda.ftl.tex" (line 782, column 5)
+goal:  Cod(texPhi )=Dom(texPsi ) .
+[Reasoner] "Yoneda.ftl.tex" (line 782, column 28)
+goal:  texPhi (texPsi (y))=y for all elements y of Cod(texPhi ) .
+[Reasoner] "Yoneda.ftl.tex" (line 783, column 5)
+goal:  texPsi (texPhi (x))=x for all elements x of Dom(texPhi ) .
+[Reasoner] "Yoneda.ftl.tex" (line 601, column 5)
+goal:  texPhi is a bijection between Nat[C,SET,HomF[C,c],F] and F[c] .
+[Reasoner] "Yoneda.ftl.tex"
+verification successful
+[Main] sections 348 - goals 90 - trivial 0 - proved 517 - equations 0
+[Main] symbols 1939 - checks 1900 - trivial 1650 - proved 250 - unfolds 4859
+[Main] parser 00:04.69 - reasoner 00:00.18 - simplifier 00:00.00 - prover 10:54.27/00:08.12
+[Main] total 10:59.15
+

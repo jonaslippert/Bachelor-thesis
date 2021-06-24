@@ -1,0 +1,1636 @@
+\documentclass[11pt, a4paper]{article}
+
+
+\usepackage{BA_Titelseite}
+
+
+
+
+%Namen des Verfassers der Arbeit
+\author{Jonas Benjamin Lippert}
+%Geburtsdatum des Verfassers
+\geburtsdatum{1. M\"arz 1993}
+%Gebortsort des Verfassers
+\geburtsort{M\"unster}
+%Datum der Abgabe der Arbeit
+\date{\today}
+
+%Name des Betreuers
+% z.B.: Prof. Dr. Peter Koepke
+\betreuer{Betreuer: Prof. Dr. Peter Koepke}
+%Name des Zweitgutachters
+\zweitgutachter{Zweitgutachter: Priv.-Doz. Dr. Philipp L\"ucke}
+%Name des Instituts an dem der Betreuer der Arbeit tätig ist.
+%z.B.: Mathematisches Institut
+\institut{Mathematisches Institut}
+%\institut{Institut f\"ur Angewandte Mathematik}
+%\institut{Institut f\"ur Numerische Simulation}
+%\institut{Forschungsinstitut f\"ur Diskrete Mathematik}
+%Titel der Bachelorarbeit
+\title{Nat\"urliche Formalisierung der Kategorientheorie}
+%Do not change!
+\ausarbeitungstyp{Bachelorarbeit Mathematik}
+
+\usepackage[english]{babel}
+
+% a) Mathematikpakete
+\usepackage{amsmath}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{capt-of}
+%\usepackage{showframe}
+\usepackage{csquotes}
+
+
+
+
+\usepackage{listings}
+\def\lstlanguagefiles{lstHaskell.tex}
+\lstset{language=OCaml}
+\lstset{aboveskip=10pt,belowskip=0pt}
+\newcommand{\ls}[1]{\lstinline|$\,$#1$\,$|}
+\usepackage{color}
+\definecolor{keywordcolor}{rgb}{0.9, 0.1, 0.1}    % red {0.7, 0.1, 0.1}
+\definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4}   % grey
+\definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.9}    % blue
+\definecolor{sortcolor}{rgb}{0.1, 0.7, 0.1}      % green
+\definecolor{brilliantlavender}{rgb}{0.96, 0.5, 1.0}
+
+% b) Lemma, Satz, Theorem usw. 
+\theoremstyle{plain}
+\newtheorem{Theorem}{Theorem}[section]
+\newtheorem{Satz}[Theorem]{Satz}
+\newtheorem{Lemma}[Theorem]{Lemma}
+\newtheorem{Korollar}[Theorem]{Korollar}
+\newtheorem{Axiom}[Theorem]{Axiom}
+\theoremstyle{definition}
+\newtheorem{Definition}[Theorem]{Definition}
+\newtheorem{Folgerung}[Theorem]{Folgerung}
+\newtheorem{Behauptung}[Theorem]{Behauptung}
+\newtheorem{Beispiel}{Beispiel}
+ 
+
+\usepackage{tikz-cd}
+\usepackage{quiver}
+
+\usepackage{hyperref}
+\usepackage[ backend=bibtex, style=alphabetic, sorting=nyt ]{biblatex} 
+\addbibresource{Ref.bib} 
+
+
+\usetikzlibrary{babel}
+
+\newcommand{\df}[1]{\textcolor{blue}{\textbf{#1}}}
+\newcommand{\bl}[1]{\color{brilliantlavender}{#1}}
+
+\newcommand{\mcirc}{\circ_{c}}
+\newcommand{\inn}{~\epsilon~}
+\newcommand{\innn}{~\epsilon~} % "... is an arrow and \inn ..."
+
+\usepackage{naproche}
+\newcommand{\Naproche}{$\mathbbm{N}$aproche}
+
+
+
+\begin{document}
+
+\maketitle
+
+%\clearpage
+
+%\topskip0pt
+\vspace*{\fill}
+\begin{center}
+\textbf{Abstract}
+\end{center}
+The subject of this thesis is a formalisation of the Yoneda-Lemma in the controlled, natural language ForTheL. Furthermore, modifications to the proof assistant \Naproche~are discussed that enable the use of commutative diagrams. This continues current developments that allow the use of \ls{.tex} documents. 
+ 
+\begin{center}
+\textbf{Zusammenfassung}
+\end{center}
+Gegenstand der vorliegenden Arbeit ist eine Formalisierung des Yoneda-Lemmas in der kontrollierten, nat\"urlichen Sprache ForTheL. Desweiteren werden Modifikationen am Beweisassistenten \Naproche~diskutiert, die die Verwendung von kommutativen Diagrammen erlauben. Damit werden aktuelle Entwicklungen fortgef\"uhrt, die das Verwenden von \ls{.tex}-Dokumenten erm\"oglichen.  
+\vspace*{\fill}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+The main reason for formalising mathematical texts is to make them verifiable by proof assistants. Different goals are being pursued in the development of such assistants. For example, the focus of the Lean project is on an efficient implementation that makes it possible to build a large theory of mathematics. A disadvantage here is that a formalisation is very difficult for the reader to understand afterwards. With the Natural Proof Checker \Naproche, a working group led by Prof.~Koepke is pursuing the approach of enabling the controlled, natural language ForTheL as an input format. ForTheL is an acronym for Formal Theory Language. This is a restricted English that can be parsed, i.e. translated, into a first order formula (FOL). At present, it is possible to formalise individual results in such a way that their appearance differs only insignificantly from the standard literature.
+
+In chapter \ref{two} we want to consider such a formalisation. The formalised theorem is called the Yoneda-Lemma, an early result of category theory. After a short theoretical introduction, the formalisation is discussed in detail. Although we aimed for a presentation of the proof as it is found in \cite{Riehl} we have chosen to follow a single sorted approach as it is presented in \cite{nlab:single-sorted_definition_of_a_category}. This means we only have the type of arrows. We expected \Naproche~to perform better as less structural information has to be processed. Additionally, this approach emphasizes the fact that category theory essentially is a theory of morphisms.
+Since the Yoneda-Lemma deals with the category of sets, we need to construct an object \ls{SET} that represents the universe of sets but can also be verified as a category in the single-sorted sense. We want to make use of the built-in notions of classes and functions, too. The construction is justified in the corresponding section \ref{justified}. The chapter ends with a test for inconsistencies. Hence, for the unlikly event of conflicts arising with the built-in notions, we can be almost sure that the eprover does not use contradictions. Note that our notions are constructable in ETCS. Hence, if contradictions arise, it is in principle possible to replace the built-in notions by new ones. 
+
+Chapter \ref{three} is about a diagram parser we added to \Naproche. It is able to read out the illustrated equations of diagrams drawn in the tikz-cd environment, as it interprets them as commutative. Like \Naproche~itself, it is written in Haskell, which is a purely functional programming language. An interesting question is how to integrate such a new module into \Naproche. The output is a conjunction of equations, which of course already is part of the standard grammar of ForTheL. Therefore, for our purposes, we have taken the view that commutative diagrams are a metalanguage that we want to pre-parse before we give it to the tokenizer. This is done within the Tokenizer of \Naproche. This is a temporary solution, because if the proposed viewpoint is to be investigated further, one has to change the position handling, which is not part of this work. The algorithms are designed by the author.
+
+Attached to this thesis is a CD-ROM. Any file or document that is mentioned throughout the text can be found on this CD.
+
+We want to end this introductory chapter with a quick installation guide to run a version of \Naproche~within Isabelle jedit with the modifications mentioned above. This works for Linux Mint. For other distributions or when problems may occur, please have a look at \texttt{naproche-setup.tar.gz}.
+
+
+\begin{enumerate}
+\item Stack: \texttt{wget -qO- https://get.haskellstack.org/ | sh}
+\item Git: \texttt{sudo apt-get install git}
+\item Mercurial: \texttt{sudo apt-get install mercurial}
+\item Build-essential: \texttt{sudo apt-get install build-essential}
+\item Naproche:\\
+\texttt{git clone https://github.com/naproche-community/naproche.git}\\
+Copy \texttt{Diagram.hs} and \ls{Token.hs} from the enclosed CD and paste them into \texttt{.../naproche/src/SAD/Parser}. This will replace the existing file \ls{Token.hs}.\\
+\texttt{cd naproche}\\
+\texttt{stack clean}\\
+\texttt{stack build}
+\item Isabelle:\\ 
+\texttt{cd}\\
+\texttt{hg clone https://isabelle.sketis.net/repos/isabelle-release~isabelle\\
+cd isabelle\\
+hg update -C -r Isabelle2021\\
+./bin/isabelle components -I\\
+./bin/isabelle components -a\\
+ln -s \textdollar(pwd)/bin/isabelle ~/.local/bin/isabelle}
+\item Update reference to Naproche:\\
+\texttt{cd}\\
+\texttt{isabelle components -u .../naproche \# path to Naproche directory}
+\item Build Isabelle-Naproche: \texttt{isabelle naproche\_build}
+\item Run jedit: \texttt{isabelle jedit}
+\item Open the file \ls{Yoneda.ftl.tex} within the editor.
+
+\end{enumerate}
+
+
+	
+	
+\newpage
+
+\section{About the formalisation}\label{two}
+
+	\subsection{Content introduction}
+	
+		In this section we want to give a brief intuition for the Yoneda-Lemma. 		
+		First we want to recall some basic definitions as they are given in \cite{Riehl}.
+		\begin{Definition}
+			A \df{category} consists of
+			\begin{enumerate}
+			\item[$\bullet$] a collection of \df{objects} $X,Y,Z,...$
+			\item[$\bullet$] a collection of \df{morphisms} $f,g,h,...$
+			\end{enumerate}
+			such that:
+			\begin{enumerate}
+				\item[$\bullet$] Each morphism has specified \df{domain} and \df{codomain} objects.
+				\item[$\bullet$] Each object has a designated \df{identity morphism} $1_X:X\rightarrow X$.
+				\item[$\bullet$] For any pair of morphisms $f,g$ with the codomain of $f$ equal to the domain of $g$, there exists a specified \df{composite morphism} $gf$ whose domain is equal to the domain $f$ and whose codomain is equal to the codomain of $g$.
+			\end{enumerate}
+			This data is subject to the following two axioms:
+			\begin{enumerate}
+				\item[$\bullet$] For any $f:X\to Y$, the composites $1_Yf$ and $f1_X$ are both equal to $f$.
+				\item[$\bullet$] For any composable triple of morphisms $f,g,h$, the composites $h(gf)$ and $(hg)f$ are equal.
+			\end{enumerate}							
+		\end{Definition}
+		
+		\begin{Definition}
+			A \df{functor} $F:C\to D$, between categories $C$ and $D$, consists of the following data:
+			\begin{enumerate}
+				\item[$\bullet$] An object $F(c)\in D$, for each object $c\in C$.
+				\item[$\bullet$] A morphism $Ff:Fc\to Fc'\in D$, for each morphism $f:c\to c'\in C$, so that the domain and codomain of $Ff$ are, respectively, equal to $F$ applied to the domain or codomain of $f$.
+			\end{enumerate}
+			The assignments are required to satisfy the following two \df{functoriality axioms}:
+			\begin{enumerate}
+				\item[$\bullet$] For any composable pair $f,g$ in $C$, $Fg\cdot Ff=F(g\cdot f)$.
+				\item[$\bullet$] For each object $c$ in $C$, $F(1_c)=1_{Fc}$.
+			\end{enumerate}
+		\end{Definition}
+		
+		\begin{Definition}
+			If $C$ is \df{locally small}, i.e., between any pair of objects there is only a set's worth of morphisms, then for any object $c\in C$ we define the \df{covariant functor represented by} $c$:
+
+		\[\begin{tikzcd}
+	C && Set \\
+	x && {C(c,x)} \\
+	{} && {} \\
+	y && {C(c,y)}
+	\arrow["{C(c,-)}", from=1-1, to=1-3]
+	\arrow["f"', from=2-1, to=4-1]
+	\arrow["{f_*}", from=2-3, to=4-3]
+	\arrow[shorten <=18pt, shorten >=18pt, maps to, from=2-1, to=2-3]
+	\arrow[shorten <=18pt, shorten >=18pt, maps to, from=4-1, to=4-3]
+	\arrow[shorten <=30pt, shorten >=26pt, maps to, from=3-1, to=3-3, xshift=-3mm, yshift=-1mm]
+		\end{tikzcd}\]
+			where $f_*$ is the post-composition function: $f_*(g)\coloneqq f\cdot g$.
+		\end{Definition}
+		
+		\begin{Definition}
+			Given categories $C$ and $D$ and functors $F,G:C\rightrightarrows D$, a \df{natural transformation} $\alpha:F\Rightarrow G$ consists of an arrow $\alpha_c:Fc\to Gc$ in $D$ for each object $c\in C$, the collection of which define the \df{components} of the natural transformations, so that, for any morphism $f:c\to c'$ in $C$, the following square of morphisms in $D$
+			\[\begin{tikzcd}
+	Fc & Gc \\
+	{Fc'} & {Gc'}
+	\arrow["Gf", from=1-2, to=2-2]
+	\arrow["{\alpha_c}", from=1-1, to=1-2]
+	\arrow["Ff"', from=1-1, to=2-1]
+	\arrow["{\alpha_{c'}}"', from=2-1, to=2-2]
+\end{tikzcd}\]
+			commutes.
+		\end{Definition}
+		
+		We are now able to formulate the Yoneda-Lemma.
+		
+		\begin{Lemma}[Yoneda]
+		For any functor $F:C\to Set$, whose domain $C$ is locally small, and any object $c\in C$, there is a bijection
+		$$Nat(C(c,-),F)\cong Fc$$
+		that associates a natural transformation $\alpha: C(c,-)\Rightarrow F$ to the element $\alpha_c(1_c)\in Fc$.
+		\end{Lemma}
+		
+		We want to visualize the assertion and sketch the proof by the aid of the following figure.
+
+% https://q.uiver.app/?q=WzAsMTgsWzYsMywiYyJdLFsxLDMsImQiXSxbNiw2LCJGKGMpIl0sWzEsNiwiRihkKSJdLFs1LDcsIlxcYnVsbGV0Il0sWzYsOCwiXFxidWxsZXQiXSxbNyw3LCJcXGJ1bGxldCJdLFs0LDNdLFsxLDcsIlxcUHNpKHgpX2QoZilcXFxcPUYoZikoeCkiXSxbMiw3LCJcXGJ1bGxldCJdLFswLDcsIlxcYnVsbGV0Il0sWzEsOCwiXFxidWxsZXQiXSxbNiw3LCJ4ID0gXFxcXFxcUHNpKHgpX2MoMV9jKSJdLFs3LDMsIjFfY1xcY2lyY2xlYXJyb3dsZWZ0Il0sWzIsMCwiZSJdLFsyLDIsIkYoZSkiXSxbOCwzLCJcXGNpcmMiXSxbNyw0XSxbMCwxLCIiLDIseyJjdXJ2ZSI6Miwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoiZG90dGVkIn0sImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMCwxLCIiLDAseyJzdHlsZSI6eyJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsMSwiZiIsMSx7ImN1cnZlIjotMiwic3R5bGUiOnsiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFswLDEsIkMoYyxkKSIsMCx7ImN1cnZlIjotNCwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoiZG90dGVkIn0sImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMCwxLCIiLDAseyJjdXJ2ZSI6LTF9XSxbMCwyLCJGIiwxXSxbMSwzLCJGIiwxXSxbMiw0LCIiLDAseyJjdXJ2ZSI6MSwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoic3F1aWdnbHkifSwiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs2LDIsIiIsMCx7ImN1cnZlIjoxLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJzcXVpZ2dseSJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzMsOSwiIiwwLHsiY3VydmUiOi0xLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJzcXVpZ2dseSJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzEwLDMsIiIsMCx7ImN1cnZlIjotMSwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoic3F1aWdnbHkifSwiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFs0LDksIkYoZikiLDFdLFs5LDExLCIiLDAseyJjdXJ2ZSI6LTEsInN0eWxlIjp7ImJvZHkiOnsibmFtZSI6InNxdWlnZ2x5In0sImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMTAsMTEsIiIsMix7ImN1cnZlIjoxLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJzcXVpZ2dseSJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzUsNCwiIiwwLHsiY3VydmUiOi0xLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJzcXVpZ2dseSJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzYsNSwiIiwxLHsiY3VydmUiOi0xLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJzcXVpZ2dseSJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsMTQsImdcXGNpcmMgZiIsMSx7ImN1cnZlIjozLCJzdHlsZSI6eyJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsMTQsIiIsMix7ImN1cnZlIjo1LCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJkb3R0ZWQifSwiaGVhZCI6eyJuYW1lIjoibm9uZSJ9fX1dLFswLDE0LCJDKGMsZSkiLDAseyJjdXJ2ZSI6MSwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoiZG90dGVkIn0sImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMTQsMTUsIkYiLDFdLFsxLDE0LCJnIiwyLHsiY3VydmUiOi0xLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJkYXNoZWQifX19XSxbMywxNSwiRihnKSIsMix7ImxhYmVsX3Bvc2l0aW9uIjo0MCwiY3VydmUiOi0xLCJzdHlsZSI6eyJib2R5Ijp7Im5hbWUiOiJkYXNoZWQifX19XSxbMTYsMCwiQyhjLGMpIiwwLHsibGFiZWxfcG9zaXRpb24iOjQwLCJjdXJ2ZSI6LTUsInN0eWxlIjp7ImJvZHkiOnsibmFtZSI6ImRvdHRlZCJ9LCJoZWFkIjp7Im5hbWUiOiJub25lIn19fV0sWzAsMTYsIiIsMCx7ImN1cnZlIjotNSwic3R5bGUiOnsiYm9keSI6eyJuYW1lIjoiZG90dGVkIn0sImhlYWQiOnsibmFtZSI6Im5vbmUifX19XSxbMjEsMjcsIlxcUHNpKHgpX2QiLDIseyJvZmZzZXQiOi0xLCJjdXJ2ZSI6LTIsInNob3J0ZW4iOnsic291cmNlIjoxMCwidGFyZ2V0IjoxMH0sImxldmVsIjoxfV0sWzM2LDE1LCJcXFBzaSh4KV9lIiwyLHsibGFiZWxfcG9zaXRpb24iOjYwLCJvZmZzZXQiOi0xLCJjdXJ2ZSI6LTIsInNob3J0ZW4iOnsic291cmNlIjozMH0sImxldmVsIjoxfV0sWzQwLDI2LCJcXFBzaSh4KV9jIiwwLHsibGFiZWxfcG9zaXRpb24iOjYwLCJvZmZzZXQiOi0yLCJjdXJ2ZSI6LTIsInNob3J0ZW4iOnsic291cmNlIjoyMCwidGFyZ2V0IjoxMH0sImxldmVsIjoxfV1d
+\begin{figure}
+\begin{tikzcd}[column sep = 20, row sep=15]
+	&& [-5pt] e &&&& \\
+	\\
+	&& {F(e)} \\
+	& \textbf{d} &&& {} && \textbf{c} & [-10pt] {\circlearrowleft1_c} & \circ \\
+	&&&&&&& {} \\
+	\\
+	& {F(d)} &&&&& {\substack{F(c)~\cong\\ Nat(C(c,-),F)}} \\ [-10pt]
+	\cdot & {\begin{matrix} \Psi(x)_d(f) \\ =F(f)(x) \end{matrix}} & \cdot &&& \cdot & {\begin{matrix} x = \Phi(\alpha) = \\ \Psi(x)_c(1_c) \end{matrix}} & \cdot \\
+	& \cdot &&&&& \cdot	
+	\arrow["{F(g)}"'{description, pos=0.35}, curve={height=-6pt}, green, dashed, from=7-2, to=3-3]
+	\arrow[no head, no body, crossing over, from=4-7, to=4-2]
+	\arrow[curve={height=-6pt}, curve={height=-18pt}, no body, no head, crossing over, from=4-7, to=4-2]
+	\arrow["F(g\circ f)"{description, pos=0.25}, shorten <=5pt, curve={height=5pt}, dashed, shift left=2, green, from=7-7, to=3-3]
+	\arrow[curve={height=12pt}, dotted, red, crossing over, no head, from=4-7, to=4-2]
+	\arrow[""{name=0, anchor=center, inner sep=0}, "{C(c,d)}", curve={height=-24pt}, dotted, red, crossing over, no head, from=4-7, to=4-2]
+	\arrow["f"{description, pos=0.6}, curve={height=-8pt}, crossing over, from=4-7, to=4-2]
+	\arrow["F"{description}, cyan, from=4-7, to=7-7]
+	\arrow["F"{description}, cyan, from=4-2, to=7-2]
+	\arrow[curve={height=12pt}, squiggly, cyan, no head, from=7-7, to=8-6]
+	\arrow[""{name=1, anchor=center, inner sep=0}, curve={height=12pt}, squiggly, cyan, no head, from=8-8, to=7-7]
+	\arrow[""{name=2, anchor=center, inner sep=0}, curve={height=-12pt}, squiggly, cyan, no head, from=7-2, to=8-3]
+	\arrow[curve={height=-12pt}, squiggly, cyan, no head, from=8-1, to=7-2]
+	\arrow["{F(f)}"{description}, green, from=8-6, to=8-3]
+	\arrow[curve={height=-12pt}, squiggly, cyan, no head, from=8-3, to=9-2]
+	\arrow[curve={height=12pt}, squiggly, cyan, no head, from=8-1, to=9-2]
+	\arrow[curve={height=-12pt}, squiggly, cyan, no head, from=9-7, to=8-6]
+	\arrow[curve={height=-12pt}, squiggly, cyan, no head, from=8-8, to=9-7]
+	\arrow["{g\circ f}"{description}, curve={height=18pt}, from=4-7, to=1-3]
+	\arrow[curve={height=30pt}, dotted, red, no head, from=4-7, to=1-3]
+	\arrow[""{name=3, anchor=center, inner sep=0, pos=0.55}, "{C(c,e)}", curve={height=6pt}, dotted, red, no head, from=4-7, to=1-3]
+	\arrow["F"{description}, cyan, from=1-3, to=3-3]
+	\arrow["g"'{description}, curve={height=-6pt}, dashed, from=4-2, to=1-3]	
+	\arrow[""{name=4, anchor=center, inner sep=0}, "{C(c,c)}"{pos=0.472}, curve={height=-30pt}, dotted, red, no head, from=4-9, to=4-7]
+	\arrow[curve={height=-30pt}, dotted, red, no head, from=4-7, to=4-9]
+	\arrow["{\Psi(x)_d}"'{description}, green, shift left=1, curve={height=-12pt}, shorten <=12pt, shorten >=8pt, from=0, to=2]
+	\arrow["f_*"'{description}, green, shift left=2.2, crossing over, curve={height=2pt}, shorten <=14pt, shorten >=14pt, from=4, to=0]
+	\arrow["{\Psi(x)_e}"'{description, pos=0.64}, green, shift left=0, dashed, curve={height=-12pt}, shorten <=20pt, from=3, to=3-3]
+	\arrow["{\Psi(x)_c}"{description, pos=0.54}, green, shift left=2, curve={height=-12pt}, shorten <=11pt, shorten >=5pt, from=4, to=1]
+	\arrow["g_*"'{description}, green, shift left=-2, crossing over, curve={height=2pt}, dashed, shorten <=8pt, shorten >=14pt, from=0, to=3]
+\end{tikzcd}
+	\caption{Yoneda-Lemma}
+	\label{fig:Yoneda}
+\end{figure}
+
+
+The association $\Phi(\alpha)\coloneqq \alpha_c(1_c)$ is clearly well defined. Our task is to verify for any element $x\in F(c)$, that $\Psi(x)$, defined componentwise by $\Psi(x)_d(f)\coloneqq F(f)(x)$ for each $d\in C$ and $f:c\to d$, is the inverse of $\Phi$. 
+Any element $f:c\to d$ of $C(c,d)$ is sent to $F(f)$ applied on $\Phi(\alpha)=x$. 
+Hence, by naturality of $\alpha$, which is exemplified by the frontal green square in figure \ref{fig:Yoneda}, 
+$$\Psi(\Phi(\alpha))_d(f) = F(f)(\Phi(\alpha)) = F(f)(\alpha_c(1_c)) = \alpha_d(f_*(1_c)) = \alpha_d(f) $$
+as claimed.
+Further we have $$\Phi(\Psi(x))=\Psi(x)_c(1_c)=F(1_c)(x)=1_{F(c)}(x)=x.$$
+To see that $\Psi(x)$ is a natural transformation we have to consider the green square on the left in figure \ref{fig:Yoneda}. On the right hand side $f$ is sent via $\Psi(x)_d$ to $F(g)(F(f)(x))$. Since the left down direction sends $f$ to $F(g_*(f))(x)$, the claim follows by functoriality of $F$.
+
+
+
+	\newpage
+	
+	
+	\subsection{Documentation}
+	
+	While our aim is the reconstruction of the proof presented by \cite{Riehl}, we decided to follow a single-sorted approach.
+	This seems to be more suitable for \Naproche~to be able to deal with larger expressions towards the end of the formalisation.
+	Therefore the basic definitions are following the text on \cite{nlab:single-sorted_definition_of_a_category} for categories and functors. Natural transformations are based on the definition given in \cite[pg.13]{MR1071176}. Since the correspondence is intuitivly obvious and the proof of the equivalence is rather technical, the proof can be found in appendix \ref{appendix}.
+	
+	The onthological check is sometimes a delicate undertaking for \Naproche. Especially when the complexity of objects increases, it becomes necessary to repeat earlier results. A good example is the use of the extensionality axiom for functions in the proof of the Yoneda-Lemma. Every variable on which the notion of a natural transformation depends, namely the two categories and two functors, has to be part of a component declaration. Hence, by nesting these objects, the check task only passes after repeating a lot of \enquote{type confirmation} statements. Dealing with these nested objects to then use e.g. the axiom above only works when every premise of the axiom is repeated just before the assertion. Although we want to present the complete formalisation, of course we will skip such repetitions. Another type of axioms which we have commented out is the handling of sets as they are currently implemented in \Naproche. E.g., to talk about elementhood, every element has to be flagged as \ls{setsized}. We modified the tokenizer such that it ignores \ls{\%}. Hence \Naproche~can still verify the \LaTeX~document \ls{Yoneda.ftl.tex} while the pdf version does not include these repetitions.
+	
+	\subsubsection{Categories}
+	
+	First we extend our language by some basic notions. Note that the elementhood relation denoted by $\epsilon$ is a new one, disinct from the built-in relation symbol $\in$ for sets. 
+	
+	~
+	\begin{forthel}
+		
+		\begin{signature} An arrow is a notion. \end{signature}
+		\begin{signature} A collection of arrows is a notion. \end{signature}
+		
+		Let $f,g,h$ denote arrows.
+		Let $C,D$ denote collection of arrows.
+		
+		\begin{signature} $f\inn C$ is an atom. \end{signature}
+		
+		\begin{axiom}
+			$C = D \iff (f\inn C \iff f \inn D)$.
+		\end{axiom}
+		
+		\begin{signature} $s[f]$ is an arrow. \end{signature}   
+		\begin{signature} $t[f]$ is an arrow. \end{signature}  
+		
+		\begin{signature} $g \mcirc f$ is an arrow.\end{signature}
+		
+	\end{forthel}~
+			According to the definition given on \cite{nlab:single-sorted_definition_of_a_category}, we define a category to be a collection of arrows with the appropriated axioms. 
+			
+	~
+	\begin{forthel}			
+		
+		\begin{definition} 
+			A category is a collection of arrows $C$ such that
+			
+			(for every arrow $f$ such that $f\inn C$ we have
+			
+			$s[f] \inn C$ and $t[f] \inn C$ and
+			$t[s[f]]=s[f]$ and $s[t[f]]=t[f]$ and
+			 
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{s[f]} \ar{rd}[swap]{f} & s[f] \ar{d}{f} \\ & t[f]
+				\end{tikzcd}
+			\end{center}	
+			and
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{f} & t[f] \ar{d}{t[f]} \\ & t[f]
+				\end{tikzcd}
+				)
+			\end{center}
+			and (for each arrow $f,g$ such that $f,g \inn C$ we have
+			
+			($t[f]=s[g] \implies$ (there is an arrow $h$ such that $h \inn C$ and 
+
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{h} & s[f] \ar{d}{g} \\ & t[g]
+				\end{tikzcd}
+			\end{center}						
+			
+			and for every arrow $k$ such that $k \inn C$ and $g \mcirc f = k$ we have $h=k$)))
+			
+			and for all arrows $f,g,h$ such that $f,g,h \inn C$ and $t[f]=s[g]$ and $t[g]=s[h]$
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{d}[swap]{(g \mcirc f)} & t[f] \ar{d}{(h \mcirc g)} \\ t[g] \ar{r}{h} & t[h]
+				\end{tikzcd}	.
+			\end{center}
+		                      		 
+		\end{definition}
+		
+
+	\end{forthel}
+	
+	\subsubsection{Construction of SET}
+	
+	To be able to reason about the category of sets, we want to construct it from the notions of sets and functions predefined in \Naproche. Since sets in \Naproche~behave like classes, we have to avoid Russels paradox by defining an \ls{sset} to be a \ls{set} which is contained within another \ls{set}. This is inspired by Kelly-Morse set theory. Functions come along with a predefined domain \ls{Dom}. 
+	We introduce some basic concepts and identify them with the corresponding categorical notions according to our interpretation. \\\\	
+	The shortcut at the beginning defines \ls{\\innn}, which is on \LaTeX~level identified with our original relation $\epsilon$. 
+	
+	~
+	\begin{forthel}
+	
+		Let $f \innn C$ stand for ($f$ is an arrow such that $f \inn C$).
+	
+				\begin{definition} 
+			An sset is a set $x$ such that $x$ is an element of some set.
+		\end{definition}
+		
+		Let $f,g,h$ denote functions.
+		
+		\begin{signature} 
+			$Cod(f)$ is a notion. 
+		\end{signature}
+
+		\begin{axiom} 
+			$Cod(f)$ is a set. 
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $x \in  Dom(f)$. $f(x) \in Cod(f)$.
+		\end{axiom}
+
+		\begin{axiom}[Ext]
+			Let $f,g$ be functions and $Dom(f) = Dom(g)$ and $Cod(f) = Cod(g)$.
+			Let $f(x) = g(x)$ for every element $x$ of $Dom(f)$.
+			$f = g$.
+		\end{axiom}
+		
+		\begin{definition} 
+			Let $Cod(f)=Dom(g)$. 
+			
+			$g \circ f$ is the function $h$ such that
+			$Dom(h)=Dom(f)$ and $Cod(h)=Cod(g)$ and $h(x)=g(f(x))$ for every element $x$ of $Dom(f)$.
+		\end{definition}
+		
+		\begin{lemma} 
+			Let $Cod(f)=Dom(g)$ and $Cod(g)=Dom(h)$.
+			
+			$h \circ (g \circ f) = (h \circ g) \circ f$.
+		\end{lemma}
+		
+		\begin{axiom}
+			Every function is an arrow.
+		\end{axiom}
+		
+		\begin{axiom}		
+			$s[f]$ is a function such that 
+			
+			$Dom(s[f])=Dom(f)=Cod(s[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$s[f](y)=y$ for every element $y$ of $Dom(f)$.
+		\end{axiom}
+		
+
+		\begin{axiom}		
+			$t[f]$ is a function such that 
+			
+			$Dom(t[f])=Cod(f)=Cod(t[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$t[f](y)=y$ for every element $y$ of $Cod(f)$.
+		\end{axiom}
+		
+		\begin{definition} 
+		\begin{center}
+			$SET = \{ $function $f \mid Dom(f)$ is an sset and $Cod(f)$ is an sset $\}$.
+		\end{center}
+			
+		\end{definition}
+		
+		%\begin{axiom} 
+		%	$SET$ is a set.
+		%\end{axiom}
+		
+		%\begin{axiom} 
+		%	If $Dom(f), Cod(f)$ are sset then $f$ is setsized.
+		%\end{axiom}
+		
+		\begin{lemma}
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f \in SET$.
+		\end{lemma}
+		
+		\begin{axiom}
+			$SET$ is a collection of arrows.
+		\end{axiom}
+
+		\begin{axiom}
+			Let $f$ be an arrow. $f \inn SET \iff f \in SET$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $f \innn SET$. $s[f]=Dom(f)$ and $t[f]=Cod(f)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f = g \mcirc f$.
+		\end{axiom}
+
+		%\begin{lemma}
+		%Let $f\in SET$. $s[f] \in SET$ and $t[f] \in SET$.
+		%\end{lemma}
+	
+	\end{forthel}~
+	
+	\paragraph{Justification of SET}\label{justified}~\\\\
+	Axiom 25 requires special attention. We want to discuss why \ls{SET} corresponds to ordinary set theory. We have functions with domain and codomain that behave like identities. These functions behave like it is required for them to correspond to the single-sorted definition of a category. Hence it is in principle possible to extend the theory of categories (based on these notions) to an Elementary Theory of the Category of Sets (ETCS) as it is discussed in \cite{nlab:fully_formal_etcs}. Note that, for the moment, this is possible independently from the fact that the domain and codomain have some extra structure (that of an sset). ETCS can be augmented with additional axioms to make it equivalent to full SEARC \cite{nlab:sear}. SEARC (Sets, Elements And Relations plus Choice) is another structural theory of sets. Furthermore, SEARC is equivalent to ZFC \cite{nlab:sear}. Therefore it is possible to construct the notions of sets and gloabl elementhood within ETCS. We want to sketch the construction of \ls{sset} and \ls{$\in$}. As suggested in \cite{nlab:sear}, we want an \ls{sset} to be an equivalence class of well-founded extensional accessible graphs, as described in \cite{nlab:pure_set}:
+	\begin{Definition}
+	A \df{graph} is a class G of \df{nodes} equipped with a binary relation \df{$\rightarrow$} on the nodes. A node $i$ is called a \df{child} of a node $j$ if $i\rightarrow j$.
+	\end{Definition}
+	The idea is that nodes $x=s[x]$ represent \ls{ssets}, and $i\rightarrow j$ corresponds to $i\in j$.
+	
+	\begin{Definition}
+	A graph is \df{well-founded} if it has no infinite paths.
+	\end{Definition}
+	
+	\begin{Definition}
+	A graph is \df{pointed} if it is equipped with a specified node $T$ called the \df{root}. A pointed graph is \df{accessible} if for every node $x$, there exists a path $x=x_0\rightarrow...\rightarrow x_n=T$ to the root. An accessible pointed graph is abbreviated \df{APG}.
+	\end{Definition}
+	Such a construction is possible since Th(ETCS) includes the existence of a terminal object $1=s[1]$:
+	\begin{Axiom}
+	$$\exists_1(1=s(1))\wedge(\forall_f(f=s(f))\implies(\exists!g:(s(g)=f\wedge t(g)=1)).$$
+	\end{Axiom}
+	Note that the terminal objects in the ordinary category of sets are the singletons. Hence it makes sence to think of the root of an APG to be its representative.
+	
+	\begin{Definition}
+	Let $G$ be an APG and $z$ its representative. We define the \df{full subgraph} of $G$ rooted at $y$ to be the subgraph of $G$ consisting of all those nodes which admit some path to $y$ and write $G/y$. If $y$ is a child of the root $z$, we say that $G/y$ is an \df{immediate subgraph} of $G$. 
+	\end{Definition}
+	These immediate subgraphs represent the \ls{ssets} that are \enquote{elements of} $G$. Note that this is well-defined because such full subgraphs of APGs are APGs themselfes.
+	
+	\begin{Definition}
+	A well-founded graph is \df{extensional} if for any nodes $x$ and $y$ such that for all $z$, we have that $z\to x$ iff $z\to y$ implies $x=y$.
+	\end{Definition}
+	
+	Given this construction, we can interpret our notion of an \ls{sset} as an abbreviatory notation for these graphs. On the other hand, we can think of \ls{SET} to be an ETCS construction within Kelly-Morse (KM) set theory, since ZFC (and thus ETCS) can be proven to be consistent within KM.
+	
+We are now ready to prove that \ls{SET} is a category by performing the obvious equations.	
+	
+	\begin{forthel}
+		
+		\begin{theorem} 
+			$SET$ is a category.
+		\end{theorem}
+		\begin{proof}
+			
+			Let us show that for every arrow $f$ such that $f \inn SET$ we have
+			$s[f] \inn SET$ and $t[f] \inn SET$  
+			and $t[s[f]]=s[f]$ and $s[t[f]]=t[f]$  
+			and $f \mcirc s[f] = f$ and $t[f] \mcirc f = f$.
+			
+			Proof.
+			Let $f$ be an arrow such that $f \inn SET$.
+
+			$s[f] \inn SET$ and $t[f] \inn SET$.
+
+			%$t[s[f]],s[f],s[t[f]],t[f] \in SET$.
+			%$Dom(t[s[f]])=Dom(s[f])$. 
+			%$Cod(t[s[f]])=Cod(s[f])$. 
+			$$(t[s[f]](y)=s[f](y)$$ for every  $y \in Dom(f)$) and
+			$$s[t[f]](y)=t[f](y)$$ for any $y \in Cod(f)$.
+			
+			We have
+			$$((f \circ s[f])(y) = f(s[f](y)) = f(y)$$ and
+			$$(t[f] \circ f)(y) = t[f](f(y)) = f(y))$$
+			for every $y \in Dom(f)$.
+			Hence $f \circ s[f] = f$ and $t[f] \circ f = f$.
+			Thus
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{s[f]} \ar{rd}[swap]{f} & s[f] \ar{d}{f} \\ & t[f]
+				\end{tikzcd}
+			\end{center}
+			and
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{f} & t[f] \ar{d}{t[f]} \\ & t[f]
+				\end{tikzcd}	.
+			\end{center}
+			End.
+			
+
+			For each arrow $f,g$ such that $f,g \inn SET$ we have
+			
+			($t[f]=s[g] \implies$ (there is an arrow $h$ such that $h \inn SET$ and 
+
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{h} & s[f] \ar{d}{g} \\ & t[g]
+				\end{tikzcd}
+			\end{center}						
+			
+			and for every arrow $k$ such that $k \inn SET$ and $g \mcirc f = k$ we have $h=k$)).
+			%Proof. The thesis. End.
+			
+
+			Let us show that for all arrows $f,g,h$ such that $f,g,h \inn SET$ and t[f]=s[g] and t[g]=s[h]
+			we have $h \mcirc (g \mcirc f) = (h \mcirc g) \mcirc f$. 
+			
+			Proof.
+			Let $f,g,h$ be arrows such that $f,g,h \inn SET$ and t[f]=s[g] and t[g]=s[h].
+			$h \circ (g \circ f) = (h \circ g) \circ f$.
+			Therefore
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{d}[swap]{(g \mcirc f)} & t[f] \ar{d}{(h \mcirc g)} \\ t[g] \ar{r}{h} & t[h]
+				\end{tikzcd}.
+			\end{center}
+			End.
+
+
+		\end{proof}
+		
+
+
+	\end{forthel}
+
+		\newpage
+	\subsubsection{Bijections}
+	
+	At this point we give a definition of a bijection via left and right inverse. It is worth mentioning that we do not claim $Q$ to be the codomain of $g$. It is not necessary for us to enrich our concept of a codomain in a way, to be able to construct it explicitly.
+
+~	
+	\begin{forthel}
+		
+		\begin{signature}
+			Let $Q,R$ be sets.
+			A bijection between $Q$ and $R$ is a notion.
+		\end{signature}
+
+		\begin{axiom}
+			Let $Q,R$ be sets.
+			Let $f$ be a function such that $Dom(f) = Q$ and $Cod(f)=R$.
+			Let $g$ be a function such that $Dom(g) = R$ and $g(y) \in Q$ for any element $y$ of $R$.
+			Let $f(g(y))=y$ for all elements $y$ of $Dom(g)$. 
+			Let $g(f(x))=x$ for all elements $x$ of $Dom(f)$.
+			Then $f$ is a bijection between $Q$ and $R$.
+		\end{axiom}
+		
+	\end{forthel}~
+	
+	\subsubsection{Functors}
+	
+	The definition of a functor just differs from \cite{nlab:single-sorted_definition_of_a_category} by the fact that a functor does not need to be a function. A functor application is just an operation on arrows.
+	
+	~
+	\begin{forthel}
+		
+		\begin{signature} A functor is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F$ be a functor. Let $f$ be an arrow. $F[f]$ is an arrow.
+		\end{signature}
+		
+		\begin{definition}
+			Let $C,D$ be categories.
+			A functor from $C$ to $D$ is a functor $F$ such that
+			(for all arrows $f$ such that $f \inn C$ we have
+			$F[f] \inn D$
+			and $$F[s[f]] = s[F[f]]$$
+			and $$F[t[f]] = t[F[f]])$$
+			and for all arrows $f,g$ such that $f,g \inn C$ and $t[f]=s[g]$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar{r}{F[f]} \ar{rd}[swap]{F[g \mcirc f]} & F[t[f]] \ar{d}{F[g]} \\  & F[t[g]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+	\end{forthel}~
+	
+	\subsubsection{Construction of the Hom Functor}
+	
+	Next we have to construct the Hom Functor, also called the covariant functor represented by $c$. 
+	
+	After defining the collection of morphisms between two identities, we call a category locally small whenever all these collections are elements of $SET$. Hence we can use them as functions. We define these functions in the way we want the Hom functor to behave. Note that by uniqueness of arrows we have that $s[c]=c$ if $s[h]=c$.
+
+	~
+	\begin{forthel}
+		
+		Let $C$ denote a category.	
+		
+		\begin{signature}
+			Let $c,x \innn C$. 
+			$Hom[C,c,x]$ is a collection of arrows such that $f \inn C$ for any arrow $f$ such that $f \inn Hom[C,c,x]$.
+		\end{signature}
+		
+		\begin{axiom} 
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			\begin{center}
+				$h \inn Hom[C,c,x]$ $\iff (s[h]=c$ and $t[h]=x$).
+			\end{center}
+		\end{axiom} 
+				
+		\begin{definition}
+			A locally small category is a category $C$ such that 
+			$Hom[C,c,f]$ is an element of SET for all arrows $c,f$ such that $c,f \inn C$.
+		\end{definition}
+		
+		
+		Let $C$ denote a locally small category.
+		
+		\begin{axiom}
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			$$h \in Dom(Hom[C,c,x]) \iff h \inn Hom[C,c,x].$$
+		\end{axiom}
+
+		
+		\begin{axiom}
+			Let $c,f \innn C$.
+			$$Dom(Hom[C,c,f]) = Hom[C,c,s[f]]$$ and 
+			$$Cod(Hom[C,c,f]) = Hom[C,c,t[f]]$$ and
+			$$Hom[C,c,f](h) = f \mcirc h$$ for each arrow $h$ such that $h \in Hom[C,c,s[f]]$.
+		\end{axiom}
+
+		\begin{axiom} 
+			Let $c,x \innn C$. Any element $h$ of $Dom(Hom[C,c,x])$ is an arrow.
+		\end{axiom}
+		
+	\end{forthel}~
+	
+		The following lemma indicates that our construction can be used to define a functor, which is done afterwards. The verification again is a straightforward calculation.
+	
+	~
+	\begin{forthel}
+
+		\begin{lemma}[funct]
+			Let $c,f,g \innn C$ and $t[f]=s[g]$.
+			$$Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f].$$
+		\end{lemma}
+		\begin{proof}
+		  $f \mcirc h \in Hom[C,c,s[g]]$ for each arrow $h$ such that $h \in Hom[C,c,s[f]]$.
+		  
+		  Proof. 
+		  Let $h$ be an arrow such that $h \in Hom[C,c,s[f]]$.
+		  $f \mcirc h$ is an arrow $e$ such that $s[e]=c$ and $t[e]=t[f]$. End.
+		  
+		($h$ is an arrow and
+		  $$(Hom[C,c,g] \circ Hom[C,c,f])(h)$$
+		  $$=Hom[C,c,g](Hom[C,c,f](h))$$
+		  $$=Hom[C,c,g](f \mcirc h) =g \mcirc (f \mcirc h)$$
+		  $$ = (g \mcirc f) \mcirc h = Hom[C,c,g \mcirc f](h))$$ for each element $h$ of $Hom[C,c,s[f]]$.
+		  %$$Hom[C,c,s[f]] = $$
+		  %$$Dom(Hom[C,c,g \mcirc f]) = Dom(Hom[C,c,g] \circ Hom[C,c,f]).$$  
+		  %$$Cod(Hom[C,c,g \mcirc f]) = Cod(Hom[C,c,g] \circ Hom[C,c,f]).$$
+		  Therefore the thesis (by Ext).
+		\end{proof}
+		
+
+		
+		\begin{definition} 
+			Let $c \innn C$.
+			$HomF[C,c]$ is a functor such that 
+			for each arrow $f$ such that $f \inn C$ we have $$HomF[C,c][f] = Hom[C,c,f].$$
+		\end{definition}
+		
+		
+		
+		\begin{theorem} 
+			Let $c \innn C$. 
+			$HomF[C,c]$ is a functor from $C$ to $SET$.
+		\end{theorem}
+		\begin{proof}
+			
+			For all arrows $f$ such that $f \inn C$ we have
+			$$HomF[C,c][f] \inn SET$$
+			and $$HomF[C,c][s[f]] = s[HomF[C,c][f]]$$
+			and $$HomF[C,c][t[f]] = t[HomF[C,c][f]].$$
+			Proof.
+			  Let $f\innn C$.
+			  $$HomF[C,c][s[f]] = Hom[C,c,s[f]]= $$
+			  $$Dom(Hom[C,c,f]) = s[Hom[C,c,f]] $$
+			  $$= s[HomF[C,c][f]].$$
+			End.
+			
+			For all arrows $f,g$ such that $f,g \inn C$ and $t[f]=s[g]$ we have
+			$$HomF[C,c][g \mcirc f] = HomF[C,c][g] \mcirc HomF[C,c][f].$$
+			Proof. Let $f,g \innn C$ and $t[f]=s[g]$.
+			  $$Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f]$$ (by funct).
+			End.
+			
+		\end{proof}
+
+
+
+%\begin{lemma}
+%Let $c,d \innn C$ and $f \innn Hom[C,c,d]$.
+%$s[c]=c$ and $s[d]=d$.
+%\end{lemma}
+
+		
+	\end{forthel}~
+	
+
+	\subsubsection{Natural Transformations}
+	
+	As with categories and the Hom functor, we need to introduce an initial notion, that of a \ls{transformation}, in order to be able to construct such objects. We can then use these objects to check whether they actually match the definition. This definition is based on \cite{MR1071176} because we do not need the diagonal components which are easy to access given the definition on \cite{nlab:single-sorted_definition_of_a_category}. Hence we only have components for identities.
+	
+	Each \ls{transformation} comes along with a collection of arrows consisting of its components. Since the components depend on the data from the two functors and the two categories, \Naproche~requires all of these variables to be part of the designation. 
+		
+	
+	\begin{forthel}~
+		
+		Let $C,D$ denote categories.
+		
+		\begin{signature} A transformation is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$T[C,D,F,G,\alpha]$ is a collection of arrows.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation. Let $d \innn C$.
+			$T[C,D,F,G,\alpha,d]$ is an arrow.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$$T[C,D,F,G,\alpha,d] \inn T[C,D,F,G,\alpha]$$ for every arrow $d$ such that $d \inn C$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			For any arrow $f$ such that $f \inn T[C,D,F,G,\alpha]$ there exists an arrow $d$ such that
+			$d \inn C$ and $T[C,D,F,G,\alpha,d] = f$.
+		\end{axiom}
+		
+
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			A natural transformation from $F$ to $G$ over $C$ and $D$ is a transformation $\alpha$ such that 
+			
+			(for any arrow $d$ such that $d \inn C$ and s[d]=d we have
+			$$T[C,D,F,G,\alpha,d] \inn D)$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$s[T[C,D,F,G,\alpha,d]] = F[d])$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$t[T[C,D,F,G,\alpha,d]] = G[d])$$
+			
+			and for any arrow $f$ such that $f \inn C$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar[yshift=2mm]{r}{T[C,D,F,G,\alpha,s[f]]} \ar{d}[swap]{F[f]} & G[s[f]]  \ar{d}{G[f]}  \\ F[t[f]] \ar[yshift=-2.5mm]{r}[swap]{T[C,D,F,G,\alpha,t[f]]} & G[t[f]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			\begin{center}
+			$Nat[C,D,F,G] = \{$ transformation $\alpha \mid \alpha$ is a natural transformation from $F$ to $G$ over $C$ and $D$ $\}$.
+			\end{center}
+			
+		\end{definition}
+		
+		%\begin{axiom} Let $F,G$ be functors from $C$ to $D$. $Nat[C,D,F,G]$ is a set.
+		%\end{axiom}
+		
+
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha, \beta \in Nat[C,D,F,G]$.
+			$$\alpha = \beta \iff T[C,D,F,G,\alpha] = T[C,D,F,G,\beta].$$
+		\end{axiom}
+
+
+		
+	\end{forthel}~
+
+
+	\subsubsection{Yoneda-Lemma}
+
+	To construct the bijection and its inverse we need the use of axioms. That's why they have to be defined beforehand.
+	
+	\paragraph{Construction of the bijection}~\\\\
+	When defining functions one has to consider a peculiarity of \Naproche. The following approach will lead into the undesired situation that every function is identified with the function $\Psi$:
+	\begin{lstlisting}
+		Signature. Psi is a function.
+	\end{lstlisting}
+	This problem occurs when dealing with sets, too.
+	
+	Hence we first extend the language by the name of the function. \Naproche\\checks well-definedness by itself.
+	
+	~
+	\begin{forthel}
+		
+		Let $C$ denote a locally small category.
+	
+		\begin{signature}
+			$\Psi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Psi$ is a function and
+			$Dom(\Psi) = F[s[c]]$ and $\Psi(x)$ is a transformation for every element $x$ of $Dom(\Psi)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$.
+			Let $x \in Dom(\Psi)$. 
+			$T[C,SET,HomF[C,c],F,\Psi(x),d]$ is a function and
+			$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) = Hom[C,c,d]$$ and 
+			$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d].$$
+		\end{axiom}
+		
+		\begin{axiom}[PsiDef]
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$ and $f\innn Hom[C,c,d].$
+			Let $x \in Dom(\Psi)$. $$T[C,SET,HomF[C,c],F,\Psi(x),d](f) = F[f](x).$$
+		\end{axiom}
+		
+		%\begin{lemma}[vllunnoetig]
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $x \in Dom(\Psi)$. Let $d \innn C$.
+		%	$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET$.
+		%\end{lemma}
+		%\begin{proof}
+		%	$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) = Hom[C,c,d]$ and 
+		%	$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d]$.
+		%	$Hom[C,c,d]$ and $F[d]$ is an sset.
+		%	$T[C,SET,HomF[C,c],F,\Psi(x),d]$ is a function.
+		%\end{proof}
+
+		%\begin{axiom} 
+		%Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. 
+		%Let $x \in Dom(\Psi)$.
+		%$\Psi(x)$ is setsized.
+		%\end{axiom}
+
+		\begin{signature} $\Phi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Phi$ is a function and
+		$$Dom(\Phi) = Nat[C,SET,HomF[C,c],F]$$ and $$Cod(\Phi) = F[s[c]].$$
+		\end{axiom}
+
+		%\begin{lemma}
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		%	$T[C,SET,HomF[C,c],F,\alpha,s[c]] \in SET$ and $s[c] \in Dom(T[C,SET,HomF[C,c],F,\alpha,s[c]]).
+		%\end{lemma}
+		%\begin{proof}
+		% \alpha is a natural transformation from HomF[C,c] to F over C and SET.
+		%	for any arrow $d$ such that $d \inn C$ and s[d]=d we have
+		%	$T[C,SET,HomF[C,c],F,\alpha,d] \inn SET$$.
+		%\end{proof}
+
+		\begin{axiom}[PhiDef]
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$.
+		Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		$$\Phi(\alpha) = T[C,SET,HomF[C,c],F,\alpha,s[c]](s[c]).$$
+		\end{axiom}
+		
+
+
+	\end{forthel}
+	
+	\paragraph{Result}~\\
+	Our previous work enables us to formulate and proof the Yoneda-Lemma as it is presented in \cite{Riehl}. As mentioned before, the most parts of the proof text are redundant. Since improving the management of already known material is an achievable goal in the short term, it is fair to say that \Naproche~is in principle capable of verifying the text as it is presented here. Due to its textbook-like appearance, no further comments seem to be necessary. 
+
+	~
+	\begin{forthel}
+	
+		\begin{lemma}[Yoneda]
+		Let C be a locally small category. Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$ and $s[c]=c$. 
+		\begin{center}
+			$\Phi$ is a bijection between $Nat[C,SET,HomF[C,c],F]$ and $F[c]$.
+		\end{center}							
+		\end{lemma}
+		\begin{proof}
+
+
+		Let us show that for every element $x$ of $Dom(\Psi)$
+		\begin{center}		
+			$\Psi(x)$ is a natural transformation from $HomF[C,c]$ to $F$ over $C$ and $SET$.
+		\end{center}
+		
+   			Proof.
+   			Let $x\in Dom(\Psi)$.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ and s[d]=d we have
+			$$T[C,SET,HomF[C,c],F,\Psi(x),d] \inn SET.$$ 
+			Proof.
+			Let $d \innn C$ and s[d]=d.
+			$$Hom[C,c,d] = Dom(T[C,SET,HomF[C,c],F,\Psi(x),d])$$ 
+			and $$F[d] = Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]).$$			
+			End.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ we have
+			$$s[T[C,SET,HomF[C,c],F,\Psi(x),d]] = HomF[C,c][d].$$
+			Proof.
+			Let $d \innn C$.
+			%$$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET.$$			
+			$$s[T[C,SET,HomF[C,c],F,\Psi(x),d]] =$$			
+			$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) =$$			
+			$$Hom[C,c,d] = HomF[C,c][d].$$
+			
+			End.
+			
+			Let us show that for any arrow $d$ such that $d \inn C$ we have
+			$$t[T[C,SET,HomF[C,c],F,\Psi(x),d]] = F[d].$$
+			Proof.
+			Let $d \innn C$.
+			%$$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET.$$			
+			$$t[T[C,SET,HomF[C,c],F,\Psi(x),d]] =$$ 			
+			$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d].$$			
+			End.
+			
+			Let us show that for any arrow $g$ such that $g \inn C$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					Hom[C,c,s[g]] \ar{r}[yshift=2mm]{T[C,SET,HomF[C,c],F,\Psi(x),s[g]]} \ar{d}[swap]{HomF[C,c][g]} & F[s[g]] \ar{d}{F[g]} \\ Hom[C,c,t[g]] \ar{r}[swap,yshift=-2mm]{T[C,SET,HomF[C,c],F,\Psi(x),t[g]]} & F[t[g]]
+				\end{tikzcd}.
+			\end{center}
+		
+			Proof.
+			Let $g \innn C$.
+			$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])(f)$$
+			$$=T[C,SET,HomF[C,c],F,\Psi(x),t[g]](Hom[C,c,g](f))$$
+			$$=T[C,SET,HomF[C,c],F,\Psi(x),t[g]](g \mcirc f)$$
+			$$=F[g\mcirc f](x) = (F[g] \mcirc F[f])(x)$$ 
+			for all arrows $f$ such that $f \inn Dom(HomF[C,c][g])$.
+			%Proof. The thesis. End.
+			%Cod(T[C,SET,HomF[C,c],F,\Psi(x),s[g]]) = Dom(F[g]).
+			$$(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]])(f)$$
+			$$=F[g](T[C,SET,HomF[C,c],F,\Psi(x),s[g]](f))$$
+			$$=F[g](F[f](x)) = (F[g] \mcirc F[f])(x)$$ 
+			for all arrows $f$ such that $f \inn Dom(T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$
+			%Proof. The thesis. End.
+			%$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])(f) =$$ 
+			%$$(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]])(f)$$
+			%for any element $f$ of $Dom(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g]).$
+			%$T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g]$ and $F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]$ are 					functions.
+			%$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$=Dom(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$= Cod(F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%$$(T[C,SET,HomF[C,c],F,\Psi(x),t[g]] \circ HomF[C,c][g])$$ 
+			%$$= (F[g] \circ T[C,SET,HomF[C,c],F,\Psi(x),s[g]]).$$
+			%Proof. The thesis(by Ext). End.
+			
+			End.
+			
+		QED.
+
+		%For every element $x$ of $Dom(\Psi)$ $\Psi(x) \in Nat[C,SET,HomF[C,c],F]$.
+
+		Let us show that for every element $x$ of $Dom(\Psi)$ 
+		$$\Phi(\Psi(x)) = x.$$
+
+		
+		Proof.
+		Let $x \in Dom(\Psi)$.
+		%$\Psi(x) \in Nat[C,SET,HomF[C,c],F].$
+		$$\Phi(\Psi(x)) = T[C,SET,HomF[C,c],F,\Psi(x),s[c]](s[c]) = $$
+		$$F[s[c]](x) = s[F[c]](x) = x.$$
+		QED.
+
+		Let us show that for every element $\alpha$ of $Nat[C,SET,HomF[C,c],F]$
+		$$\Psi(\Phi(\alpha)) = \alpha.$$
+		
+		Proof.
+		
+		Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		
+		For all arrows $d,f$ such that $d \inn C$ and $f\inn Hom[C,c,d]$ we have
+		$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$ 
+		$$=F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		(by PsiDef).
+		%Proof. Therefore the thesis.	End. 
+
+		For all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$ we have
+		\begin{center}
+			\begin{tikzcd} 
+				Hom[C,c,c] \ar{r}[xshift=-2mm, yshift=2mm]{T[C,SET,HomF[C,c],F,\alpha,c]} \ar{d}[swap]{Hom[C,c,f]} & F[c] \ar{d}{F[f]} \\ Hom[C,c,d] \ar{r}[swap,xshift=-2mm,yshift=-2mm]{T[C,SET,HomF[C,c],F,\alpha,d]} & F[d]
+			\end{tikzcd}.
+		\end{center}
+	
+		%$$s[F[f]]= t[T[C,SET,HomF[C,c],F,\alpha,c]]$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f], T[C,SET,HomF[C,c],F,\alpha,c] \inn SET$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$Dom(F[f])= Cod(T[C,SET,HomF[C,c],F,\alpha,c])$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f] \mcirc T[C,SET,HomF[C,c],F,\alpha,c]$$ 
+		%$$= F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c]$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+
+		%$$T[C,SET,HomF[C,c],F,\alpha,d] \mcirc Hom[C,c,f]$$=$$T[C,SET,HomF[C,c],F,\alpha,d] \circ Hom[C,c,f]$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+
+		%$$(F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c])(s[c])$$
+		%$$=(T[C,SET,HomF[C,c],F,\alpha,d] \circ Hom[C,c,f])(s[c])$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in F[s[c]]$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in Dom(F[f])$$ 
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$(F[f] \circ T[C,SET,HomF[C,c],F,\alpha,c])(s[c])$$
+		%$$=F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%$$F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		%$$=T[C,SET,HomF[C,c],F,\alpha,d](Hom[C,c,f](s[c]))$$
+		%for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+
+		Hence
+		$$F[f](T[C,SET,HomF[C,c],F,\alpha,c](s[c]))$$
+		$$=T[C,SET,HomF[C,c],F,\alpha,d](f)$$
+		for all arrows $d,f$ such that $d\inn C$ and $f\inn Hom[C,c,d]$.
+		%Proof. Therefore the thesis. End.
+		
+		%For all arrows $d,f$ such that $d \inn C$ and $f\inn Hom[C,c,d]$ we have
+		%$$T[C,SET,HomF[C,c],F,\alpha,d](f) =$$
+		%$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$.
+		%Proof. Therefore the thesis.	End. 
+
+		%$\alpha$ is a natural transformation from $HomF[C,c]$ to $F$ over $C$ and $SET$.
+		%$$T[C,SET,HomF[C,c],F,\alpha,c](s[c]) \in Dom(\Psi).$$
+		Therefore
+		$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]$$
+		$$=T[C,SET,HomF[C,c],F,\alpha,d]$$
+		for all arrows $d$ such that $d\inn C$.
+		%Proof.
+		%Let $d \innn C$. 
+		%$$s[T[C,SET,HomF[C,c],F,\alpha,d]] = Hom[C,c,d].$$
+		%$$Dom(T[C,SET,HomF[C,c],F,\alpha,d]) = Hom[C,c,d].$$
+		%Proof. Therefore the thesis. End.
+		%$T[C,SET,HomF[C,c],F,\alpha,d]$, $T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]$ are functions.
+		%$$Dom(T[C,SET,HomF[C,c],F,\alpha,d]) = $$
+		%$$Dom(T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]).$$
+		%$$Cod(T[C,SET,HomF[C,c],F,\alpha,d]) = $$
+		%$$Cod(T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d]).$$  
+		%For any element $f$ of $Dom(T[C,SET,HomF[C,c],F,\alpha,d])$ we have
+		%$$T[C,SET,HomF[C,c],F,\alpha,d](f) =$$
+		%$$T[C,SET,HomF[C,c],F,\Psi(T[C,SET,HomF[C,c],F,\alpha,c](s[c])),d](f)$$.
+		%Therefore the thesis (by Ext).	End.
+
+		%$$\Psi(\Phi(\alpha)) = \alpha \iff $$
+		%$$T[C,SET,HomF[C,c],F,\Psi(\Phi(\alpha))] = T[C,SET,HomF[C,c],F,\alpha].$$
+		
+		$$\Psi(\Phi(\alpha)) = \alpha \iff $$
+		$$T[C,SET,HomF[C,c],F,\Psi(\Phi(\alpha)),d] = T[C,SET,HomF[C,c],F,\alpha,d]$$
+		for all arrows $d$ such that $d\inn C$. Thus we have the thesis.
+		QED.
+
+		%$Nat[C,SET,HomF[C,c],F]$ and $F[c]$ are sets.
+		%$\Phi$ is a function. $\Psi$ is a function. 
+		%$Cod(\Phi)=Dom(\Psi)$. $\Phi(\Psi(y))=y$ for all elements $y of Cod(\Phi)$. 
+		%$\Psi(\Phi(x))=x$ for all elements $x$ of $Dom(\Phi)$.
+		
+
+		\end{proof}
+		
+	\end{forthel}~
+	
+	\Naproche~is able to check this implementation in about 11 minutes on a ThinkPad P53s with an Intel© Core™ i7-8565U CPU @ 1.80GHz × 4 and 16GB of RAM. The following is an excerpt from the document \ls{verif}.
+	\begin{lstlisting}
+[Reasoner] "Yoneda.ftl.tex"
+verification successful
+[Main] sections 348 - goals 90 - trivial 0 - proved 517 - equations 0
+[Main] symbols 1939 - checks 1900 - trivial 1650 - proved 250 - unfolds 4859
+[Main] parser 00:04.69 - reasoner 00:00.18 - simplifier 00:00.00 - prover 10:54.27/00:08.12
+[Main] total 10:59.15.
+	\end{lstlisting}
+	Note that we had to increase the standard check and proof time and depth. This is done via
+	\begin{lstlisting}
+	[checktime 10]
+	[timelimit 10]
+	[depthlimit 10]
+	[checkdepth 10]
+	\end{lstlisting}
+	at the beginning of the document.
+
+	\subsection{The possibility of inconsistency}
+
+	Our theory is non-standard. Therefore, we want to complement the justification of our approach in \ref{justified} with an empirical test using the eprover.
+	
+	To do this, we first pass all the axioms we have established up to the construction of the Hom functor to the eprover (see \ls{Yoneda_axioms1.ftl.tex} and \ls{dump1.p}). After 10 minutes and allocating 12GB RAM, no contradiction can be derived:
+	\begin{lstlisting}
+	./eprover --auto --memory-limit=12288 --soft-cpu-limit=600 dump1.p
+	...
+	# Failure: User resource limit exceeded!
+	\end{lstlisting}
+	The complete eprover output can be found in  \ls{eprover_output_dump1}.\\
+	
+	Similarly, we test our theory by changing each statement to an axiom (see \ls{Yoneda_axioms2.ftl.tex} and \ls{dump2.p}). Again, with 12GB RAM, no contradiction can be shown within 10 minutes
+	\begin{lstlisting}
+	./eprover --auto --memory-limit=12288 --soft-cpu-limit=600 dump2.p
+	...
+	# Failure: User resource limit exceeded!
+	\end{lstlisting}
+	See \ls{eprover_output_dump2} for the complete output.\\
+	
+	So we can strongly assume that even if our theory is inconsistent and hence most likely not derivable from e.g. ZFC, no contradiction was used for the verification of the argumentation. This is because the hole verification takes less than 11 minutes and the eprover uses a maximum of about 3GB RAM. In this unlikely case, our reasoning in \ref{justified} suggests that only minor changes on the built-in notions would be necessary to restore relative consistency.
+	
+
+\newpage
+\section{Documentation of the diagram parser}\label{three}
+
+	In this section, we assume basic knowledge of the Haskell programming language in which the parser is written.
+	It can be read as a short introduction into parsing in Haskell.
+	
+	The diagram parser made it possible to formalize our basic categorical concepts in a more natural way by using commutative diagrams. It can read diagrams that are written in a \ls{tikz-cd} environment which fulfill the following syntax.
+	\begin{enumerate}
+		\item[$\bullet$] Arrows have to have the form 
+		\begin{center}
+			\ls{\\ar[<options>]\{<direction>\}[<options>]\{<name>\}}.
+		\end{center}
+		It is important that the direction is given in the correct order: left, up, right, down. For instance, to write an arrow which points two columns right and one row down, write \ls{rrd}.
+		\item[$\bullet$] The name of the nodes are irrelevant since it reads only the arrows.
+		\item[$\bullet$] Names of nodes and arrows must not include braces as they are key characters for the parser.
+		\item[$\bullet$] The \LaTeX~code should not include linebreaks if one is interested in correct source positions. This has to do with our temporary solution to track the position.
+		\item[$\bullet$] Circles are not allowed.
+		\item[$\bullet$] Columns are separated by $\&$, rows by $\backslash\backslash$.
+	\end{enumerate}
+	The output is a conjunction of equations, where paths with identical start and end points are identified.
+	Because this type of assertion is already part of the grammar of ForTheL, it would be redundant to parse it down to \ls{FTL Formular}. Instead, we'll consider a \ls{tikz-cd} graph as a metalanguage that we want to pre-parse before tokenization. We'll take a closer look at integration later, but for now we just need to know that it's sufficient for the input and output of our parser to be a \ls{string}. 
+	
+	We do not import advanced modules like parsec or attoparsec, since it is part of this work to build such a parser from scratch.
+	
+	The parser consists of four parts. First, the input is parsed into a \ls{Diagram} type, which is a list of \ls{Arrow}.
+	An \ls{arrow} contains information about the position of its source and target in the form of a tuple. These positions are used to build all possible paths.
+	Then the function 
+	\begin{center}
+		\ls{mkEqtClass :: (Eq a) => [a] -> [[a]]}
+	\end{center}
+	converts these diagrams into a list of lists of arrows which have common start and end points. Finally, an appropriate function prints out these classes by connecting class members with \ls{\=} and classes with \ls{and}.
+	
+	
+	\subsection{Diagram.hs}
+	
+	The goal is to create the parser \ls{tikzcdP}, which translates a diagram in the manner described above. As we want to integrate it later into the tokenizer of \Naproche, it is the only function we export from our module. To be able to combine smaller parsers we need \ls{Control.Applicative}. Note that we do not need to import any modules from \Naproche~as we are simply translating a \ls{String}.
+	\begin{lstlisting}[belowskip= -10pt]
+module SAD.Parser.Diagram (
+  tikzcdP) where
+
+import Control.Applicative
+import Data.List
+import Data.List.Split 
+import Data.Maybe		
+	\end{lstlisting}
+	\subsubsection{Data}
+	We want to define a diagram as a list of arrows. An arrow is a triple consisting of a name, source and target. A position is a tuple of integers as we want to think of our diagram to be a two dimensional object on a grid. We start in the upper left corner on \ls{initpos = (0,0)} and count down each row in the left entry and up each column on the right. Since we want to identify paths with the same source and target, we derive accordingly that \ls{Arrow} is an instance of \ls{Eq}.
+\begin{lstlisting}
+data Arrow = Arrow
+  { name   :: String,
+    source :: Position,
+    target :: Position
+  }
+  deriving Show
+
+instance Eq Arrow where
+  (==) a b = source a == source b && target a == target b
+
+data Diagram = Diagram
+  { arrows :: [Arrow]
+  }
+  deriving Show
+
+type Position = (Int, Int)
+initpos :: Position
+initpos = (0,0)
+\end{lstlisting}
+
+	\subsubsection{Parser}
+
+	We want a parser to be a function from \ls{String} to \ls{(String, Diagram)}, where the beginning of the input is parsed into a diagram and the rest is kept in the first entry of the tuple for further parsing. Since the beginning of the \ls{String} could be unprocessable for the parser, we have to distinguish between success and failure. Hence we wrap our tuple into the \ls{Maybe} monad. In the case of success we get \ls{Just (String, a)} and otherwise \ls{Nothing}.
+	
+\begin{lstlisting}
+newtype Parser a = Parser
+  { runParser :: String -> Maybe (String, a)
+  }
+  
+\end{lstlisting}~\\
+So for a general type \ls{a}, a \ls{Parser p} has type \ls{Parser a} if \ls{p} is a function \ls{String -> Maybe (String, a)}. On the other hand, if \ls{p} has type \ls{Parser a} we can extract the function with \ls{runParser p}.\\   
+We now want to cunstruct 
+
+\begin{lstlisting}
+diagramP :: Parser Diagram
+diagramP = Diagram <$\text{\textdollar}$> many arP
+
+\end{lstlisting}~\\
+by repeating \ls{arP} as often as possible, where \ls{arP} is capable of parsing a single arrow. The \ls{many} method is available for instances of \ls{Alternative}:
+\begin{lstlisting}
+some v = (:) <$\text{\textdollar}$> v <*> many v
+many v = some v <|> pure []
+\end{lstlisting}~\\
+The details are described below. It applies its argument until it fails and returns the results in a list. Hence \ls{Diagram <$\text{\textdollar}$> many arP} is a diagram parser. Since \ls{Alternative} is a monoid on applicative functors, we need to show that \ls{parser a} is an instance of these three classes. In principle, it is only about using the fact that \ls{Maybe} already is such an instance. Thus we are able to manipulate its content inside. E.g., as used above, given a parser \ls{p :: String -> Maybe(String,a)} and a function \ls{f :: a -> b} that we want to apply on the parsing result \ls{x :: a}, we need an appropriate operator \ls{fmap} (identical with \ls{<$\text{\textdollar}$>}):
+
+\begin{lstlisting}
+instance Functor Parser where   
+  fmap f (Parser p) =
+    Parser $\text{\textdollar}$ \input -> do
+      (input', x) <- p input
+      Just (input', f x)
+      
+\end{lstlisting}~\\
+Another operation \ls{<*>} comes with \ls{Applicative}. It allows an application of the parsing result of \ls{Parser p} to that of \ls{Parser q}. Hence we have to show that such an operation exists.
+
+\begin{lstlisting}
+instance Applicative Parser where   
+  pure x = Parser $\text{\textdollar}$ \input -> Just (input, x)
+  (Parser p) <*> (Parser q) = 
+    Parser $\text{\textdollar}$ \input -> do
+      (input', f) <- p input
+      (input'', a) <- q input'
+      Just (input'', f a)
+      
+\end{lstlisting}~\\
+For illustration, consider \ls{Just (5+) <*> Just 6 = Just 11}. In the definition of \ls{some} we see this operator in action: After the list appending operator \ls{(:)} is lifted on \ls{v}, a list is expected as a second argument which is recursively built by \ls{many v} until \ls{v} is no longer applicable. 
+
+Finally, we show that \ls{Parser} is an instance of \ls{Alternative}, which is a straight foreward application of its equivalent for \ls{Maybe}.  
+
+\begin{lstlisting}
+instance Alternative Parser where   
+  empty = Parser $\text{\textdollar}$ \_ -> Nothing
+  (Parser p) <|> (Parser q) =
+    Parser $\text{\textdollar}$ \input -> p input <|> q input 
+    
+\end{lstlisting}~\\
+For example, \ls{Nothing <\|> Just 5 = Just 5}. We are now able to build parsers for different types and achieved some essential combinators. 
+
+\subsubsection{\ls{arP}}
+
+The arrow parser waits for braces to get the direction and name of the current arrow. The only problem to be solved is how to carry the position. 
+
+\begin{lstlisting}
+arP :: Parser Arrow
+arP = Parser $\text{\textdollar}$ \input -> do
+  let pos = pstn input
+  (input1, rest)  <- runParser (spanP (/= '{')) input
+  let newpos = src rest pos
+  (input2, _)    <- runParser (charP '{') input1
+  (input3, dr)   <- runParser (spanP (/= '}')) input2
+  (input4, _)    <- runParser (spanP (/= '{')) input3
+  (input5, _)    <- runParser (charP '{') input4
+  (input6, name) <- runParser (spanP (/= '}')) input5
+  (input7, _)    <- runParser (charP '}') input6
+  case name /= "" of
+    True  -> Just (show newpos ++ input7, Arrow name newpos (trgt dr newpos))
+    _     -> Nothing
+
+\end{lstlisting}~\\
+The idea is to add the current position to the beginning of the unparsed input. This happens in \ls{show newpos ++ input8}. When the next arrow is parsed, we get this position by \ls{pstn input}.
+
+\begin{lstlisting}
+pstn :: String -> Position
+pstn input@(x:xs) =
+  if x == '(' then
+    let (a, rest) = span (/= ',') xs in
+    let (b, rest') = span (/= ')') (tail rest) in
+      (read a, read b)
+  else initpos
+  
+\end{lstlisting}~\\
+If no position is found, which would be the case for the first arrow, we start at \ls{initpos}. We now have to evaluate the starting point of the current arrow. For this we can use \ls{rest} from
+\begin{lstlisting}
+(input1, rest)  <- runParser (spanP (/= '{')) input
+\end{lstlisting}~\\
+where \ls{spanP} splits the input when $\{$ appears for the first time:
+
+\begin{lstlisting}
+spanP :: (Char -> Bool) -> Parser String
+spanP f = Parser $\text{\textdollar}$ \input -> 
+  let (token,rest) = span f input
+  in Just (rest, token)
+\end{lstlisting}~\\
+The new position is created by \ls{src}:
+
+\begin{lstlisting}
+src :: String -> Position -> Position
+src s pos@(a,b) =
+  let s1 = splitOn "\\\\" s in
+  let cl = length $\text{\textdollar}$ filter (=='&') $\text{\textdollar}$ last s1 in
+    case length s1 of
+      1 ->  (a,b+cl)
+      _ ->  (a-(length s1)+1,cl)
+      
+\end{lstlisting}~\\
+We split on \ls{\\\\} and get a list \ls{s1} of those strings that were intermitted by \ls{\\\\}. Since every new line we have to reset the columns, \ls{cl} is the number of $\&$ only appearing within the last element of \ls{s1}. 
+
+We use \ls{charP} to delete the braces.
+
+\begin{lstlisting}
+charP :: Char -> Parser String
+charP x = Parser $\text{\textdollar}$ \input -> do
+  case input of
+    y:ys
+      | y == x -> Just (ys, [x])
+      | otherwise -> Nothing
+    _ -> Nothing 
+
+\end{lstlisting}~\\
+After we extracted the name and the direction, \ls{trgt} yields the target position.
+
+\begin{lstlisting}
+trgt :: String -> Position -> Position
+trgt lurd pos@(a,b) =
+  let (lur,d) = span (/= 'd') lurd in
+    let (lu,r) = span (/= 'r') lur in
+      let (l,u) = span (/= 'u') lu in
+        (a + (length u) - (length d), b + (length r) - (length l))
+\end{lstlisting}~\\
+Finally, if \ls{name /= ""} confirms that an arrow occured, the arrow will be created. Otherwise we get \ls{Nothing} and the \ls{many} operator will stop.
+
+\subsubsection{Paths}
+Once we have our \ls{Diagram}, we need to concatenate the arrows whenever it is well-defined. 
+\begin{lstlisting}
+mkPaths1 :: Arrow -> Arrow -> [Arrow] 
+mkPaths1 a x 
+  | source x == target a  = [Arrow ((name x) ++ " \\mcirc " ++ (name a)) (source a) (target x)]
+  | source a == target x  = [Arrow ((name a) ++ " \\mcirc " ++ (name x)) (source x) (target a)]
+  | otherwise             = [] 
+
+mkPaths2 :: Arrow -> Diagram -> Diagram
+mkPaths2 x d = case arrows d of
+  [] -> Diagram []
+  (y:ys) -> Diagram $\text{\textdollar}$ mkPaths1 x y ++ arrows (mkPaths2 x (Diagram ys))
+
+mkPaths :: Diagram -> Diagram
+mkPaths d = case arrows d of
+  [] -> Diagram []
+  (x:xs) -> Diagram $\text{\textdollar}$ x : arrows (mkPaths (Diagram (xs ++ newA)))
+    where newA = arrows $\text{\textdollar}$ mkPaths2 x $\text{\textdollar}$ Diagram xs
+\end{lstlisting}~\\
+
+\begin{Lemma}
+	The \ls{mkPaths} algorithm is correct, that is, every possible path is created, no path will arise twice (efficiency) and the runtime is finite.
+\end{Lemma}
+\begin{proof}~\\
+\textbf{Correctness.} An arrow $x$ can be considered to be fully integrated into our path system, if it is included by itself and concatenated with any adjacent arrow, since any path that contains $x$ has to contain one of these concatenations. Because \ls{mkPaths} takes the first arrow from the list and prepend it to the final output, the self-includedness is clear. In
+\begin{lstlisting}
+(x:xs) -> Diagram $\text{\textdollar}$ x : arrows (mkPaths (Diagram (xs ++ newA))
+\end{lstlisting}~\\
+we call \ls{mkPaths} on the rest of the diagram complemented by \ls{newA}, which is a list of all concatenations of $x$ as required: \ls{mkPaths2} checks for each arrow not equal to $x$ whether concatenation is possible. This is done with the aid of \ls{mkPaths1} which concatenates two arrows via \ls{$\mcirc$} as it is needed for our formalisation.
+Thus, correctness is guaranteed.\\\\
+\textbf{Efficiency.} The only way for arrows to be added is by \ls{newA}, which extends paths that already exists. A path is characterized by its components and their sequence. Hence concatenation cannot lead to equality between two different paths.
+Because every arrow in our diagram is presupposed to be unique, we have the thesis.\\\\
+\textbf{Finiteness.} By efficiency, an infinite runtime presupposes infinite paths. But \ls{tikzcd} graphs are finite and no circles are allowed. 
+\end{proof}
+
+\subsubsection{Equality classes}
+The path complete diagram has to be partitioned by our predefined equality relation for \ls{Arrow}. Given an arrow $x$ and a list of arrows $xs$, \ls{mkEqtClass2} compares any arrow of $xs$ with $x$ and creates a list of arrows equal to $x$. Finally, $x$ is added itself.
+
+\begin{lstlisting}
+mkEqtClass1 :: (Eq a) => a -> a -> [a]
+mkEqtClass1 x y 
+  | x == y    = [y]
+  | otherwise 	= []
+
+mkEqtClass2 :: (Eq a) => a -> [a] -> [a]
+mkEqtClass2 x xs = case xs of
+  [] -> [x]
+  (y:ys) -> mkEqtClass2 x ys ++ mkEqtClass1 x y 
+\end{lstlisting}~\\
+Then \ls{mkEqtClass} creates the first class $z$ by taking the first arrow $y$ from a list of arrows $xs$ and comparing it to rest $ys$. The recursive call of this function is restricted to our original list minus the generated class. (This behaves well since partitions are disjunct.)
+
+\begin{lstlisting}
+
+mkEqtClasses :: (Eq a) => [a] -> [[a]]
+mkEqtClasses xs = case xs of
+  [] -> []
+  (y:ys) -> z : mkEqtClasses (ys \\ z)
+    where z = (mkEqtClass2 y ys)
+\end{lstlisting}~\\
+
+\subsubsection{Output}
+
+We now apply \ls{mkPaths} and \ls{mkEqtClasses} to our parsing result. The \ls{printEq} function connects class members with \ls{and} and classes with \ls{=}. Note that singleton classes are ignored.
+\begin{lstlisting}
+tikzcdP :: String -> String
+tikzcdP a = maybe "Error: No proper diagram found." (printEq . mkEqtClass . arrows . mkPaths . snd) (runParser diagramP a) 
+
+printEq1 :: [Arrow] -> String
+printEq1 l = case l of
+  [] -> ""
+  [x] -> name x
+  (x:xs) -> name x ++ " = " ++ printEq1 xs
+
+printEq :: [[Arrow]] -> String
+printEq a = case filter (\l -> length l >= 2) a of
+  [] -> ""
+  [l] -> printEq1 l -- ++ "."
+  (l:ls) -> printEq1 l ++ " and " ++ printEq ls
+  
+\end{lstlisting}~\\
+We test our parser using the following diagram:
+\begin{center}
+	\begin{tikzcd}
+	A \ar{r}{f} \ar{dd}[swap]{h} \ar{rdd}{\Phi} \ar[bend left=40]{rr}{j} & B \ar{dd}{g} & C \ar{dd}{k} \\\\ D & E \ar{r}{i} & F
+	\end{tikzcd}
+\end{center}
+The parser yields
+\begin{lstlisting}
+Just ("(-2,1) & F",Diagram {arrows = [Arrow {name = "f", source = (0,0), target = (0,1)},Arrow {name = "h", source = (0,0), target = (-2,0)},Arrow {name = "\\Phi", source = (0,0), target = (-2,1)},Arrow {name = "j", source = (0,0), target = (0,2)},Arrow {name = "g", source = (0,1), target = (-2,1)},Arrow {name = "k", source = (0,2), target = (-2,2)},Arrow {name = "i", source = (-2,1), target = (-2,2)}]})
+\end{lstlisting}~\\
+The final output is
+\begin{lstlisting}
+\\Phi = g \\mcirc f and i \\mcirc \\Phi = i \\mcirc g \\mcirc f = k \\mcirc j
+\end{lstlisting}
+
+\subsection{Integration into \Naproche}
+
+We want the tokenizer to recognize \ls{\\begin\{tikzcd\}} and \ls{\\end\{tikzcd\}} and tokenize the preparsed diagram.
+After importing \ls{SAD.Parser.Diagram} we have access to \ls{tikzcdP} and use it the following way.
+
+\begin{lstlisting}
+$\textcolor{symbolcolor}{\text{-- Pre Parsing of tikzcd}}$
+posToken texState pos _ s | start == $\bl{\text{"\\\textbackslash begin\{tikzcd\}"}}$ = toks
+    	where
+        	(start, rest) = Text.splitAt 14 s
+        	(diagram, rest') = Text.breakOn $\bl{\text{"\\\textbackslash end\{tikzcd\}"}}$ rest  
+        	(end, rest'') = Text.splitAt 12 rest'
+        	diagram' = Text.pack $\text{\textdollar}$ tikzcdP (Text.unpack diagram)
+        	toks = posToken texState (advancePos pos (Text.concat [start, Text.replicate ((Text.length diagram) - (Text.length diagram')) $\bl{\text{\textquotedblright d\textquotedblright}}$, end])) WhiteSpaceBefore (Text.append diagram' rest'')
+\end{lstlisting}~\\
+We enter this instance of \ls{posToken} when a tikz-cd evironment was identified. \Naproche~uses \ls{Text} instead of \ls{String}, hence we have to convert the input via \ls{Text.pack} and \ls{Text.unpack} before applying \ls{tikzcdP}. The converted text is now given to the tokenizer again. The position management is somewhat bulky. We need to subtract the length of the preparsing result whereas source positions are expected to be positive. Therefore, if this way of dealing with meta-language is to be used in the future, it must be accompanied by a revision of \ls{Core.SourcePos}. All diagrams occurring in our formalisation are working fine, but it is of course possible for the result to be longer than the input. Any other way solving this than changing \ls{SourcePos} would be a shift of the problem, hence we leave it at this provisional.
+
+\subsection{Additional changes on \Naproche}\label{addchanges}
+We modified the tokenizer slightly not to treat $\%$ as a comment introduction symbol but to use it the way described in the formalisation. Furthermore, we added the possibility to use the \ls{center} environment. It is only about ignoring the associated \LaTeX commands. In this manner, more environments can easily be implemented such as \ls{enumerate} or \ls{align}.
+\begin{lstlisting}
+$\textcolor{symbolcolor}{\text{-- Ignore texCenter}}$    
+    posToken texState pos _ s | start == $\bl{\text{"\\\textbackslash begin\{center\}"}}$ = toks
+      where
+        (start, rest) = Text.splitAt 14 s
+        toks = posToken texState (advancePos pos start) WhiteSpaceBefore rest
+
+    posToken texState pos _ s | start == $\bl{\text{"\\\textbackslash end\{center\}"}}$ = toks
+      where
+        (start, rest) = Text.splitAt 12 s
+        toks = posToken texState (advancePos pos start) WhiteSpaceBefore rest
+
+$\textcolor{symbolcolor}{\text{-- Ignore \% }}$    
+    posToken texState pos _ s | start == $\bl{\text{\textquotedblright\%\textquotedblright}}$ = toks
+      where
+        (start, rest) = Text.splitAt 1 s
+        toks = posToken texState (advancePos pos start) WhiteSpaceBefore rest
+\end{lstlisting}
+
+\newpage
+
+\section{Ideas on further developments}
+
+We have seen that, at the current stage, \Naproche~has the capability to verify mathematical texts of moderate length in a legible style as it is able to process \LaTeX~code rudimentarily.
+We would like to conclude this work with a list of recommendations for further developments.
+
+\begin{itemize}
+	\item Adding more \LaTeX~environments such as \texttt{enumerate} or \texttt{align} can be done by skipping the related commands while tokenizing, like it is presented in chapter \ref{addchanges}. However, it would certainly be worthwhile to make the automatic numbering usable for \Naproche. It would also make sense to allow a quick escape from the \Naproche~environment, similar to \texttt{text} in math mode. This could be a suitable way to integrate explanatory phrases and thus enable the use of more appealing and comprehensible formulations.
+	\item In addition, it would be helpful to receive immediate notification when the eprover yields a contradiction.
+	\item It is important to revise the built-in notion of sets (and functions) so that new objects can be introduced as sets directly through language extensions without being identified with other sets occurring in the text.
+	\item In order to make \Naproche~available to a wider audience, it is essential that intermediate results are better managed.
+	\item The diagram parser can be extended to parse information from the nodes for two-sorted formalisations. It would also be interesting to be able to use several types of arrows differently, for example to illustrate limits with the help of dashed arrows. Furthermore, one could think about changing the input format, e.g. the output that the app \texttt{https://q.uiver.app} yields.
+	\item Generally, one has to consider how meta-languages such as diagrams should be integrated. If the approach proposed in this paper is to be pursued, position tracking must be adapted accordingly.
+\end{itemize}
+It is conceivable that \Naproche~could be used for lectures within the next few years. For example, correcting worksheets could be partially automated. For such everyday operation, it seems essential that proof assistants can work with natural language.
+
+\newpage
+
+\appendix
+
+\section{Equivalence of the single-sorted and the two-sorted theory}\label{appendix}
+
+For the sake of completeness we want to show that our theory is indeed equivalent to the standard definition. The idea is that sources (and hence targets) correspond to objects.
+
+\begin{Theorem}
+	The single-sorted and the two-sorted definitions of categories, functors and natural transformations are equivalent.
+\end{Theorem}
+\begin{proof}
+	In both directions, the composition function and the class of arrows will stay unchanged. Likewise we get uniqueness of arrows as well as associativity and functoriality o arrows immediately. \\
+	Now take a model $C=(C_1,s,t,\circ)$ of the single-sorted theory.
+	We define 
+	\begin{itemize}
+	\item the class of objects $D_1\coloneqq\{{Ob}_{s[f]} \mid f \in C_1\}$, where $Ob_{(\_)}$ is a type constructor,
+	\item the class of morphisms $D_2\coloneqq~C_1$,
+	\item $Dom$ and $Cod$ to be functions from $D_2$ to $D_1$ which maps $f$ to $Ob_{s[f]}$ and $Ob_{t[f]}$ respectively,
+	\item an identity function $Id:D_1\to D_2$, ${Ob}_{s[f]}\mapsto s[f]$.
+	\end{itemize}
+	From $s[t[f]]=t[f]$ we see that
+	$$Id(Ob_{t[f]})\circ f = t[f] \circ f = f = f \circ s[f] = f \circ Id(Ob_{s[f]}).$$ 
+	Hence 
+	$$D=(D_1,D_2,Dom,Cod,Id,\circ)$$
+	is a model of the two-sorted theory.\\
+	Now let $F:C\to C'$ be a functor in the single-sorted sense. We define a functor $H:D\to D'$ that maps each object $Ob_{s[f]}\in D_1$ to $Ob_{s[F(f)]}\in D'_1$ and each function $f\in D_2$ to $F(f)\in D'_2$. This is well-defined since
+	$$ H(Id(Ob_{s[f]}))=H(s[f])=F(s[f])=s[F(f)]=Id(Ob_{s[F(f)]})$$
+	holds for any arrow $f$.\\
+	Finally consider a natural transformation $\alpha:F\Rightarrow G$. We define the two-sorted equivalent $\beta:H\Rightarrow J$ componentwise by $\beta_{Ob_{s[f]}}\coloneqq \alpha_{s[f]}$.
+	Since 
+	$$H(Ob_{s[f]})=Ob_{s[F(f)]}=Ob_{s[\alpha_{s[f]}]}$$ 
+	and
+	$$J(Ob_{s[f]})=Ob_{s[J(f)]}=Ob_{t[\alpha_{s[f]}]}$$
+	we have that $\beta_{Ob_{s[f]}}$ is an arrow from $H(Ob_{s[f]})$ to $J(Ob_{s[f]})$.
+	Naturality of $\beta$ follows by naturality of $\alpha$:
+	\begin{align*}
+	J(f)\circ\beta_{Ob_{s[f]}} 	&= G(f)\circ \alpha_{s[f]}	\\
+								&= \alpha_{t[f]}\circ F(f)	\\
+								&= \beta_{Ob_{t[f]}} \circ H(f).
+	\end{align*}
+	
+	
+	Conversly, take a model $D=(D_1,D_2,Dom,Cod,Id,\circ)$ of the standard definition. Again, composition is left unchanged and we define
+	\begin{itemize}
+	\item $C_1:=D_2$, the collection of arrows,
+	\item $s[f]\coloneqq Id(Dom(f))$, the source of an arrow $f\in C_1$,
+	\item $t[f]\coloneqq Id(Cod(f))$, the target of an arrow $f\in C_1$.
+	\end{itemize}
+	We need to show that $Id(Dom(Id(x)))=Id(x)$ for any object $x\in D_1$. But $Dom(Id(x))=x$ because $Id(x)\circ f$ is supposed to be well-defined for any $f\in D_2$ such that $f:x\to y$ for some $y$. Analogously we get $Id(Cod(Id(x)))=Id(x)$ by $Cod(Id(x))=x$.
+	Hence the identity axioms hold for any $f\in C_1$:
+	$$t[s[f]]=Id(Cod(Id(Dom(f)))) = Id(Dom(f)) = s[f],$$
+	$$s[t[f]]=Id(Dom(Id(Cod(f))))= Id(Cod(f)) = t[f],$$
+	$$f \circ s[f] = f\circ Id(Dom(f)) = f,$$
+	$$t[f]\circ f = Id(Cod(f)) \circ f = f.$$
+	Take a functor $H:D\to D'$. For $F:C\to C'$, $f\mapsto H(f)$,
+	$$F(s[f])=H(Id(Dom(f)))=Id(Dom(H(f)))=s[F(f)]\text{ and}$$
+	$$F(t[f])=H(Id(Cod(f)))=Id(Cod(H(f)))=t[F(f)]$$
+	apply as required.\\
+	A natural transformation $\beta:H\Rightarrow J$ yields a natural transformation $\alpha:\nolinebreak F\Rightarrow \nolinebreak G$, that has components for each source, defined by $\alpha_{s[f]}\coloneqq \beta_{Dom(f)}$. Hence, for any arrow $f\in C_1$, 
+	\begin{align*}
+	G(f)\circ \alpha_{s[f]} 	&= J(f)\circ \beta_{Dom(f)} \\
+							&= \beta_{Cod(f)}\circ H(f) \\
+							&= \alpha_{t[f]}\circ F(f).	 
+	\end{align*}
+	
+\end{proof}
+
+\newpage
+\printbibliography
+
+\end{document}

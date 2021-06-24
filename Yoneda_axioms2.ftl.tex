@@ -1,0 +1,520 @@
+\documentclass{article}
+
+\title{The Yoneda axiom}
+\author{Jonas Lippert}
+\date{2021}
+
+\usepackage{tikz-cd}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{naproche}
+\usepackage{bbm}
+\usepackage{hyperref}
+
+
+\newcommand{\mcirc}{\circ_{c}}
+\newcommand{\inn}{~\epsilon~}
+\newcommand{\innn}{~\epsilon~} % "... is an arrow and \inn ..."
+
+
+\newcommand{\Naproche}{$\mathbbm{N}$aproche}
+
+
+\begin{document}
+	
+	\maketitle
+	
+	
+	
+	\section{Introduction}
+	
+	The Yoneda-axiom is an early result of category theory. Following the book by Emily Riehl we want to formalize it taking an arrow theoretic approach.
+	\newpage
+	
+	\section{Categories}
+	\begin{comment}
+	\begin{forthel}
+	[synonym arrow/-s][synonym category/categories][synonym functor/-s]
+	
+	[checktime 10]
+	[timelimit 10]
+	[depthlimit 10]
+	[checkdepth 10]
+	\end{forthel}
+	\end{comment}
+	
+	\begin{forthel}
+		
+		\begin{signature} An arrow is a notion. \end{signature}
+		\begin{signature} A collection of arrows is a notion. \end{signature}
+		
+		Let $f,g,h$ denote arrows.
+		Let $C,D$ denote collection of arrows.
+		
+		\begin{signature} $f\inn C$ is an atom. \end{signature}
+		
+		\begin{axiom}
+			$C = D \iff (f\inn C \iff f \inn D)$.
+		\end{axiom}
+		
+		\begin{signature} $s[f]$ is an arrow. \end{signature}   
+		\begin{signature} $t[f]$ is an arrow. \end{signature}  
+		
+		\begin{signature} $g \mcirc f$ is an arrow.\end{signature}
+		
+		
+		\begin{definition} 
+			A category is a collection of arrows $C$ such that
+			
+			(for every arrow $f$ such that $f\inn C$ we have
+			
+			$s[f] \inn C$ and $t[f] \inn C$ and
+			$t[s[f]]=s[f]$ and $s[t[f]]=t[f]$ and
+			 
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{s[f]} \ar{rd}[swap]{f} & s[f] \ar{d}{f} \\ & t[f]
+				\end{tikzcd}
+			\end{center}	
+			and
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{f} & t[f] \ar{d}{t[f]} \\ & t[f]
+				\end{tikzcd}
+				)
+			\end{center}
+			and (for each arrow $f,g$ such that $f,g \inn C$ we have
+			
+			($t[f]=s[g] \implies$ (there is an arrow $h$ such that $h \inn C$ and 
+
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{rd}[swap]{h} & s[f] \ar{d}{g} \\ & t[g]
+				\end{tikzcd}
+			\end{center}						
+			
+			and for every arrow $k$ such that $k \inn C$ and $g \mcirc f = k$ we have $h=k$)))
+			
+			and for all arrows $f,g,h$ such that $f,g,h \inn C$ and $t[f]=s[g]$ and $t[g]=s[h]$
+			\begin{center}
+				\begin{tikzcd} 
+					s[f] \ar{r}{f} \ar{d}[swap]{(g \mcirc f)} & t[f] \ar{d}{(h \mcirc g)} \\ t[g] \ar{r}{h} & t[h]
+				\end{tikzcd}	.
+			\end{center}
+		                      		 
+		\end{definition}
+		
+
+	\end{forthel}
+	
+	\section{Construction of SET}
+	
+	\begin{comment}
+	\begin{forthel}
+	
+	Let $f \innn C$ stand for ($f$ is an arrow such that $f \inn C$).
+	
+	\end{forthel}
+	\end{comment}
+	
+	\begin{forthel}
+		
+
+		\begin{definition} 
+			An sset is a set $x$ such that $x$ is an element of some set.
+		\end{definition}
+		
+		Let $f,g,h$ denote functions.
+		
+		\begin{signature} 
+			$Cod(f)$ is a notion. 
+		\end{signature}
+
+		\begin{axiom} 
+			$Cod(f)$ is a set. 
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $x \in  Dom(f)$. $f(x) \in Cod(f)$.
+		\end{axiom}
+
+		\begin{axiom}[Ext]
+			Let $f,g$ be functions and $Dom(f) = Dom(g)$ and $Cod(f) = Cod(g)$.
+			Let $f(x) = g(x)$ for every element $x$ of $Dom(f)$.
+			$f = g$.
+		\end{axiom}
+		
+		\begin{definition} 
+			Let $Cod(f)=Dom(g)$. 
+			
+			$g \circ f$ is the function $h$ such that
+			$Dom(h)=Dom(f)$ and $Cod(h)=Cod(g)$ and $h(x)=g(f(x))$ for every element $x$ of $Dom(f)$.
+		\end{definition}
+		
+		\begin{axiom} 
+			Let $Cod(f)=Dom(g)$ and $Cod(g)=Dom(h)$.
+			
+			$h \circ (g \circ f) = (h \circ g) \circ f$.
+		\end{axiom}
+		
+		\begin{axiom}
+			Every function is an arrow.
+		\end{axiom}
+		
+		\begin{axiom}		
+			$s[f]$ is a function such that 
+			
+			$Dom(s[f])=Dom(f)=Cod(s[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$s[f](y)=y$ for every element $y$ of $Dom(f)$.
+		\end{axiom}
+		
+
+		\begin{axiom}		
+			$t[f]$ is a function such that 
+			
+			$Dom(t[f])=Cod(f)=Cod(t[f])$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$t[f](y)=y$ for every element $y$ of $Cod(f)$.
+		\end{axiom}
+		
+		\begin{definition} 
+		\begin{center}
+			$SET = \{ $function $f \mid Dom(f)$ is an sset and $Cod(f)$ is an sset $\}$.
+		\end{center}
+			
+		\end{definition}
+		
+		\begin{axiom} 
+			$SET$ is a set.
+		\end{axiom}
+		
+		\begin{axiom} 
+			If $Dom(f), Cod(f)$ are sset then $f$ is setsized.
+		\end{axiom}
+		
+		\begin{axiom}
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f \in SET$.
+		\end{axiom}
+		
+
+		
+		\begin{axiom}
+			$SET$ is a collection of arrows.
+		\end{axiom}
+
+
+		
+		\begin{axiom}
+			Let $f$ be an arrow. $f \inn SET \iff f \in SET$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $f \innn SET$. $s[f]=Dom(f)$ and $t[f]=Cod(f)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $f,g \in SET$ and $Cod(f)=Dom(g)$. $g \circ f = g \mcirc f$.
+		\end{axiom}
+
+		\begin{axiom}
+		Let $f\in SET$. $s[f] \in SET$ and $t[f] \in SET$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			$SET$ is a category.
+		\end{axiom}
+		
+
+
+	\end{forthel}
+	
+		
+	\section{Bijections}
+	
+	\begin{forthel}
+		
+		\begin{signature}
+			Let $Q,R$ be sets.
+			A bijection between $Q$ and $R$ is a notion.
+		\end{signature}
+
+		\begin{axiom}
+			Let $Q,R$ be sets.
+			Let $f$ be a function such that $Dom(f) = Q$ and $Cod(f)=R$.
+			Let $g$ be a function such that $Dom(g) = R$ and $g(y) \in Q$ for any element $y$ of $R$.
+			Let $f(g(y))=y$ for all elements $y$ of $Dom(g)$. 
+			Let $g(f(x))=x$ for all elements $x$ of $Dom(f)$.
+			Then $f$ is a bijection between $Q$ and $R$.
+		\end{axiom}
+		
+	\end{forthel}
+	
+	\section{Functors}
+	
+	\begin{forthel}
+		
+		\begin{signature} A functor is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F$ be a functor. Let $f$ be an arrow. $F[f]$ is an arrow.
+		\end{signature}
+		
+		\begin{definition}
+			Let $C,D$ be categories.
+			A functor from $C$ to $D$ is a functor $F$ such that
+			(for all arrows $f$ such that $f \inn C$ we have
+			$F[f] \inn D$
+			and $$F[s[f]] = s[F[f]]$$
+			and $$F[t[f]] = t[F[f]])$$
+			and for all arrows $f,g$ such that $f,g \inn C$ and $t[f]=s[g]$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar{r}{F[f]} \ar{rd}[swap]{F[g \mcirc f]} & F[t[f]] \ar{d}{F[g]} \\  & F[t[g]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+	\end{forthel}
+	
+	\section{Construction of the Hom Functor}
+	
+
+	
+	\begin{forthel}
+		
+		Let $C$ denote a category.	
+		
+		\begin{signature}
+			Let $c,x \innn C$. 
+			$Hom[C,c,x]$ is a collection of arrows such that $f \inn C$ for any arrow $f$ such that $f \inn Hom[C,c,x]$.
+		\end{signature}
+		
+		\begin{axiom} 
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			\begin{center}
+				$h \inn Hom[C,c,x]$ $\iff (s[h]=c$ and $t[h]=x$).
+			\end{center}
+		\end{axiom} 
+				
+		\begin{definition}
+			A locally small category is a category $C$ such that 
+			$Hom[C,c,f]$ is an element of SET for all arrows $c,f$ such that $c,f \inn C$.
+		\end{definition}
+		
+		
+		Let $C$ denote a locally small category.
+		
+		\begin{axiom}
+			Let $c,x \innn C$. Let $h$ be an arrow. 
+			$$h \in Dom(Hom[C,c,x]) \iff h \inn Hom[C,c,x].$$
+		\end{axiom}
+
+		
+		\begin{axiom}
+			Let $c,f \innn C$.
+			$$Dom(Hom[C,c,f]) = Hom[C,c,s[f]]$$ and 
+			$$Cod(Hom[C,c,f]) = Hom[C,c,t[f]]$$ and
+			$$Hom[C,c,f](h) = f \mcirc h$$ for each arrow $h$ such that $h \in Hom[C,c,s[f]]$.
+		\end{axiom}
+
+		\begin{axiom} 
+			Let $c,x \innn C$. Any element $h$ of $Dom(Hom[C,c,x])$ is an arrow.
+		\end{axiom}
+		
+		\begin{axiom}[funct]
+			Let $c,f,g \innn C$ and $t[f]=s[g]$.
+			$$Hom[C,c,g] \circ Hom[C,c,f] = Hom[C,c,g \mcirc f].$$
+		\end{axiom}
+
+		
+
+		
+		\begin{definition} 
+			Let $c \innn C$.
+			$HomF[C,c]$ is a functor such that 
+			for each arrow $f$ such that $f \inn C$ we have $$HomF[C,c][f] = Hom[C,c,f].$$
+		\end{definition}
+		
+		
+		
+		\begin{axiom} 
+			Let $c \innn C$. 
+			$HomF[C,c]$ is a functor from $C$ to $SET$.
+		\end{axiom}
+
+
+
+%\begin{axiom}
+%Let $c,d \innn C$ and $f \innn Hom[C,c,d]$.
+%$s[c]=c$ and $s[d]=d$.
+%\end{axiom}
+
+		
+	\end{forthel}
+	
+
+	\section{Natural Transformations}
+	
+	\begin{forthel}
+		
+		Let $C,D$ denote categories.
+		
+		\begin{signature} A transformation is a notion.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$T[C,D,F,G,\alpha]$ is a collection of arrows.
+		\end{signature}
+		
+		\begin{signature} Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation. Let $d \innn C$.
+			$T[C,D,F,G,\alpha,d]$ is an arrow.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			$$T[C,D,F,G,\alpha,d] \inn T[C,D,F,G,\alpha]$$ for every arrow $d$ such that $d \inn C$.
+		\end{axiom}
+		
+		\begin{axiom}
+		  Let $F,G$ be functors from $C$ to $D$. Let $\alpha$ be a transformation.
+			For any arrow $f$ such that $f \inn T[C,D,F,G,\alpha]$ there exists an arrow $d$ such that
+			$d \inn C$ and $T[C,D,F,G,\alpha,d] = f$.
+		\end{axiom}
+		
+
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			A natural transformation from $F$ to $G$ over $C$ and $D$ is a transformation $\alpha$ such that 
+			
+			(for any arrow $d$ such that $d \inn C$ we have
+			$$T[C,D,F,G,\alpha,d] \inn D)$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$s[T[C,D,F,G,\alpha,d]] = F[d])$$ and 
+
+			(for any arrow $d$ such that $d \inn C$ we have $$t[T[C,D,F,G,\alpha,d]] = G[d])$$
+			
+			and for any arrow $f$ such that $f \inn C$ we have
+			\begin{center}
+				\begin{tikzcd} 
+					F[s[f]] \ar{r}{F[f]} \ar{d}[swap]{T[C,D,F,G,\alpha,s[f]]} & F[t[f]] \ar{d}{T[C,D,F,G,\alpha,t[f]]} \\ G[s[f]] \ar{r}{G[f]} & G[t[f]]
+				\end{tikzcd}.
+			\end{center}
+		\end{definition}
+		
+		\begin{definition} 
+			Let $F,G$ be functors from $C$ to $D$. 
+			\begin{center}
+			$Nat[C,D,F,G] = \{$ transformation $\alpha \mid \alpha$ is a natural transformation from $F$ to $G$ over $C$ and $D$ $\}$.
+			\end{center}
+			
+		\end{definition}
+		
+		\begin{axiom} Let $F,G$ be functors from $C$ to $D$. $Nat[C,D,F,G]$ is a set.
+		\end{axiom}
+		
+
+		
+		\begin{axiom}
+			Let $F,G$ be functors from $C$ to $D$. Let $\alpha, \beta \in Nat[C,D,F,G]$.
+			$$\alpha = \beta \iff T[C,D,F,G,\alpha] = T[C,D,F,G,\beta].$$
+		\end{axiom}
+
+
+		
+	\end{forthel}
+
+	
+	\section{Yoneda}
+	\subsection{Construction of the bijection}
+	\begin{forthel}
+		
+		Let $C$ denote a locally small category.
+	
+		\begin{signature}
+			$\Psi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+			Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Psi$ is a function and
+			$Dom(\Psi) = F[s[c]]$ and $\Psi(x)$ is a transformation for every element $x$ of $Dom(\Psi)$.
+		\end{axiom}
+		
+		\begin{axiom} 
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$.
+			Let $x \in Dom(\Psi)$. 
+			$T[C,SET,HomF[C,c],F,\Psi(x),d]$ is a function and
+			$$Dom(T[C,SET,HomF[C,c],F,\Psi(x),d]) = Hom[C,c,d]$$ and 
+			$$Cod(T[C,SET,HomF[C,c],F,\Psi(x),d]) = F[d].$$
+		\end{axiom}
+		
+		\begin{axiom}[PsiDef]
+			Let $F$ be a functor from $C$ to $SET$. 
+			Let $c,d \innn C$ and $f\innn Hom[C,c,d].$
+			Let $x \in Dom(\Psi)$. $$T[C,SET,HomF[C,c],F,\Psi(x),d](f) = F[f](x).$$
+		\end{axiom}
+		
+		%\begin{axiom}[vllunnoetig]
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $x \in Dom(\Psi)$. Let $d \innn C$.
+		%	$T[C,SET,HomF[C,c],F,\Psi(x),d] \in SET$.
+		%\end{axiom}
+
+
+		%\begin{axiom} 
+		%Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. 
+		%Let $x \in Dom(\Psi)$.
+		%$\Psi(x)$ is setsized.
+		%\end{axiom}
+
+		\begin{signature} $\Phi$ is a notion.
+		\end{signature}
+		
+		\begin{axiom}
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$. $\Phi$ is a function and
+		$$Dom(\Phi) = Nat[C,SET,HomF[C,c],F]$$ and $$Cod(\Phi) = F[s[c]].$$
+		\end{axiom}
+
+		%\begin{axiom}
+		%	Let F be a functor from $C$ to $SET$. Let $c \innn C$.
+		%	Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		%	$T[C,SET,HomF[C,c],F,\alpha,s[c]] \in SET$ and $s[c] \in Dom(T[C,SET,HomF[C,c],F,\alpha,s[c]]).
+		%\end{axiom}
+
+
+		\begin{axiom}[PhiDef]
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$.
+		Let $\alpha \in Nat[C,SET,HomF[C,c],F]$.
+		$$\Phi(\alpha) = T[C,SET,HomF[C,c],F,\alpha,s[c]](s[c]).$$
+		\end{axiom}
+		
+
+
+	\end{forthel}
+	
+\subsection{Result}
+
+	\begin{forthel}
+	
+		\begin{axiom}[Yoneda]
+		Let $F$ be a functor from $C$ to $SET$. Let $c \innn C$ and $s[c]=c$. 
+		\begin{center}
+			$\Phi$ is a bijection between $Nat[C,SET,HomF[C,c],F]$ and $F[c]$.
+		\end{center}							
+		\end{axiom}
+
+  \begin{lemma}
+    Contradiction.
+  \end{lemma}
+		
+	\end{forthel}
+	
+\end{document}
+
+
